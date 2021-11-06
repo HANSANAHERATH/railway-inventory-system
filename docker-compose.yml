@@ -1,0 +1,53 @@
+version: "3.8"
+
+services:
+  db:
+    image: postgres
+    ports:
+      - "5433:5432"
+    environment:
+      - POSTGRES_DB=on_track
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+  nginx:
+    image: team_track/nginx
+    ports:
+      - "81:80"
+  client_service:
+    image: team_track/client-service
+    ports: 
+      - "8082:8080"
+    depends_on:
+      - db
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5433/on_track
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=postgres
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=none
+  keycloak:
+    image: jboss/keycloak
+    environment:
+#      - DB_VENDOR=postgres
+#      - DB_ADDR=db
+#      - DB_PORT=5433
+#      - DB_DATABASE=on_track
+#      - DB_USER=postgres
+#      - DB_PASSWORD=postgres
+      - KEYCLOAK_USER=admin
+      - KEYCLOAK_PASSWORD=admin
+    healthcheck:
+      test:
+        ["CMD-SHELL", "curl -f http://localhost:9990/ || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    ports:
+      - "8080:8080"
+      - "9990:9990"
+    depends_on:
+      db:
+        condition: service_started
+#  admin_service:
+#    image: team_track/admin-service
+#    ports: 
+#      - "8083:8080"
