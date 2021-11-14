@@ -1,6 +1,7 @@
 package com.railway.railwayservice.service;
 
 import com.railway.railwayservice.Exceptions.ItemAllReadyExistingException;
+import com.railway.railwayservice.Exceptions.ItemCountDecrementException;
 import com.railway.railwayservice.Exceptions.ItemNotFoundException;
 import com.railway.railwayservice.Exceptions.RuntimeExceptionHere;
 import com.railway.railwayservice.dtos.ItemCreateRequestDto;
@@ -23,6 +24,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
+@Transactional
 public class ItemServiceImpl implements ItemService{
 
     @Autowired
@@ -51,9 +53,10 @@ public class ItemServiceImpl implements ItemService{
             itemsEntity.setQuantity(itemCreateRequestDto.getQuantity());
             itemsEntity.setItemUnits(itemUnits);
             itemsEntity.setDate(stringDateToLocalDateTime(itemCreateRequestDto.getDate()));
+            itemsEntity.setBalance(itemCreateRequestDto.getQuantity());
             ItemsEntity response = itemRepository.saveAndFlush(itemsEntity);
 
-            responseWrapperDto = new ResponseWrapperDto(true, "Saved Successful", response);
+            responseWrapperDto = new ResponseWrapperDto(true, "Saved Successful", null);
             return responseWrapperDto;
         }catch (Exception e){
             throw new RuntimeExceptionHere(e);
@@ -79,6 +82,17 @@ public class ItemServiceImpl implements ItemService{
         itemsEntity.setNotes(itemCreateRequestDto.getNotes());
         itemsEntity.setQuantity(itemCreateRequestDto.getQuantity());
         itemsEntity.setItemUnits(itemUnits);
+
+        float balance = isExisting.get().getBalance();
+        float diff = itemCreateRequestDto.getQuantity() - isExisting.get().getQuantity();
+        balance = balance + diff;
+
+        if(diff < 0){
+            throw new ItemCountDecrementException();
+        }
+
+        itemsEntity.setBalance(balance);
+
         itemsEntity.setDate(stringDateToLocalDateTime(itemCreateRequestDto.getDate()));
 
         ItemsEntity response = itemRepository.saveAndFlush(itemsEntity);

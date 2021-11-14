@@ -17,6 +17,18 @@ public class ControllerAdvisor extends ResponseEntityExceptionHandler {
         return new ResponseEntity<>(responseWrapperDto, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
+    @ExceptionHandler(ItemQuantityException.class)
+    public ResponseEntity<Object> handleItemQuantityExceedException(ItemQuantityException ex, WebRequest request) {
+        ResponseWrapperDto responseWrapperDto = new ResponseWrapperDto(false, ex.getMessage(), null);
+        return new ResponseEntity<>(responseWrapperDto, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @ExceptionHandler(ItemCountDecrementException.class)
+    public ResponseEntity<Object> handleItemCountDecrementException(ItemCountDecrementException ex, WebRequest request) {
+        ResponseWrapperDto responseWrapperDto = new ResponseWrapperDto(false, ex.getMessage(), null);
+        return new ResponseEntity<>(responseWrapperDto, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
     /*@ExceptionHandler(NoDataFoundException.class)
     public ResponseEntity<Object> handleNodataFoundException(
             NoDataFoundException ex, WebRequest request) {
