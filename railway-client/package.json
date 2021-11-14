@@ -1,0 +1,73 @@
+{
+  "name": "icta-covid-vaccination-citizen-portal",
+  "author": "Creative Software",
+  "email": "info@creativesoftware.com",
+  "license": "MIT",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject",
+    "fix:prettier": "prettier \"src/**/*.js\" --write"
+  },
+  "eslintConfig": {
+    "extends": "react-app"
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  },
+  "dependencies": {
+    "@date-io/date-fns": "^1.3.13",
+    "@material-ui/core": "^4.9.1",
+    "@material-ui/data-grid": "^4.0.0-alpha.22",
+    "@material-ui/icons": "^4.9.1",
+    "@material-ui/lab": "^4.0.0-alpha.57",
+    "@material-ui/pickers": "^3.2.10",
+    "@material-ui/styles": "^4.9.0",
+    "axios": "^0.21.1",
+    "clsx": "^1.1.0",
+    "date-fns": "^2.9.0",
+    "history": "^4.10.1",
+    "http-proxy-middleware": "^1.0.6",
+    "jwt-decode": "^3.1.2",
+    "material-ui-search-bar": "^1.0.0",
+    "moment": "^2.29.1",
+    "node-sass": "^4.14.0",
+    "otp-input-react": "0.2.0",
+    "prop-types": "^15.7.2",
+    "react": "^16.12.0",
+    "react-bootstrap": "^1.0.1",
+    "react-dom": "^16.12.0",
+    "react-draggable": "^4.4.3",
+    "react-idle-timer": "^4.6.1",
+    "react-perfect-scrollbar": "^1.5.7",
+    "react-redux": "^7.1.3",
+    "react-router-dom": "^5.1.2",
+    "react-scripts": "^3.3.1",
+    "redux": "^4.0.5",
+    "redux-logger": "^3.0.6",
+    "redux-saga": "^1.1.3",
+    "validate.js": "^0.13.1"
+  },
+  "devDependencies": {
+    "@babel/helper-call-delegate": "^7.10.4",
+    "eslint": "6.8.0",
+    "eslint-plugin-prettier": "^3.1.2",
+    "eslint-plugin-react": "^7.18.3",
+    "prettier": "^1.19.1",
+    "prettier-eslint": "^9.0.1",
+    "prettier-eslint-cli": "^5.0.0",
+    "typescript": "^3.7.5"
+  }
+}
