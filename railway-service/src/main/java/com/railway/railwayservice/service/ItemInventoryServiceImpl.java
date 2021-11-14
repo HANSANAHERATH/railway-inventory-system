@@ -4,7 +4,6 @@ import com.railway.railwayservice.Exceptions.ItemCountDecrementException;
 import com.railway.railwayservice.Exceptions.ItemNotFoundException;
 import com.railway.railwayservice.Exceptions.ItemQuantityException;
 import com.railway.railwayservice.dtos.CreateInventoryDto;
-import com.railway.railwayservice.dtos.CreateInventoryResponseDto;
 import com.railway.railwayservice.dtos.GetAllInventoryResponseDto;
 import com.railway.railwayservice.dtos.LookupResponseDto;
 import com.railway.railwayservice.dtos.common.ResponseWrapperDto;
@@ -21,13 +20,10 @@ import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
-import java.util.concurrent.atomic.AtomicReference;
-import java.util.stream.Collectors;
 
 @Service
 @Transactional
-public class ItemInventoryServiceImpl implements ItemInventory{
+public class ItemInventoryServiceImpl implements ItemInventory {
 
     @Autowired
     private ItemRepository itemRepository;
@@ -41,8 +37,8 @@ public class ItemInventoryServiceImpl implements ItemInventory{
     }
 
     @Override
-    public ResponseWrapperDto getItemLookup(String itemName) throws Exception{
-        List<ItemsEntity> itemsEntities = itemRepository.findByItemNameIsContainingAndIsDeleted(itemName,false);
+    public ResponseWrapperDto getItemLookup(String itemName) throws Exception {
+        List<ItemsEntity> itemsEntities = itemRepository.findByItemNameIsContainingAndIsDeleted(itemName, false);
         List<LookupResponseDto> lookupResponseDtos = new ArrayList<>();
 
         itemsEntities.stream().forEach(i -> {
@@ -53,7 +49,7 @@ public class ItemInventoryServiceImpl implements ItemInventory{
             lookupResponseDto.setBalance(i.getBalance());
             lookupResponseDtos.add(lookupResponseDto);
         });
-        ResponseWrapperDto responseWrapperDto = new ResponseWrapperDto(true,"Fetch Success.", lookupResponseDtos);
+        ResponseWrapperDto responseWrapperDto = new ResponseWrapperDto(true, "Fetch Success.", lookupResponseDtos);
         return responseWrapperDto;
     }
 
@@ -61,11 +57,11 @@ public class ItemInventoryServiceImpl implements ItemInventory{
     public ResponseWrapperDto createInventory(CreateInventoryDto createInventoryDto) throws ItemNotFoundException, ItemCountDecrementException, ItemQuantityException {
 
         Optional<ItemsEntity> existingItemEntity = itemRepository.findById(createInventoryDto.getItemsEntityId());
-        if(!existingItemEntity.isPresent()){
+        if (!existingItemEntity.isPresent()) {
             throw new ItemNotFoundException();
         }
 
-        if(existingItemEntity.get().getBalance() < createInventoryDto.getQuantity()){
+        if (existingItemEntity.get().getBalance() < createInventoryDto.getQuantity()) {
             throw new ItemQuantityException();
         }
 
@@ -84,11 +80,11 @@ public class ItemInventoryServiceImpl implements ItemInventory{
 
         ItemUnits itemUnits = new ItemUnits();
         itemUnits.setId(createInventoryDto.getUnitId());
-       // itemInventory.setItemUnits(itemUnits);
+        // itemInventory.setItemUnits(itemUnits);
 
         ItemsEntity itemsEntity = new ItemsEntity();
         itemsEntity.setId(createInventoryDto.getItemsEntityId());
-       // itemsEntity.addItemInventory(itemInventory);
+        // itemsEntity.addItemInventory(itemInventory);
         existingItemEntity.get().setBalance(existingItemEntity.get().getBalance() - createInventoryDto.getQuantity());
         itemInventory.setItemsEntity(existingItemEntity.get());
 
@@ -106,7 +102,7 @@ public class ItemInventoryServiceImpl implements ItemInventory{
         getAllInventoryResponseDto.setSupervisorName(savedEntity.getSupervisorName());
         getAllInventoryResponseDto.setShedStoreNo(savedEntity.getShedStoreNo());
 
-        ResponseWrapperDto responseWrapperDto = new ResponseWrapperDto(true,"Create Success.", getAllInventoryResponseDto);
+        ResponseWrapperDto responseWrapperDto = new ResponseWrapperDto(true, "Create Success.", getAllInventoryResponseDto);
         return responseWrapperDto;
     }
 
@@ -114,11 +110,11 @@ public class ItemInventoryServiceImpl implements ItemInventory{
     public ResponseWrapperDto getAllInventory(Long id) throws Exception {
         ItemsEntity itemsEntity = new ItemsEntity();
         itemsEntity.setId(id);
-        List<com.railway.railwayservice.entity.ItemInventory>  list = itemInventoryRepository.findAllByItemsEntity(itemsEntity);
+        List<com.railway.railwayservice.entity.ItemInventory> list = itemInventoryRepository.findAllByItemsEntity(itemsEntity);
 
         List<GetAllInventoryResponseDto> resDtoList = new ArrayList<>();
 
-        for(com.railway.railwayservice.entity.ItemInventory itemInventory : list){
+        for (com.railway.railwayservice.entity.ItemInventory itemInventory : list) {
             GetAllInventoryResponseDto getAllInventoryResponseDto = new GetAllInventoryResponseDto();
             getAllInventoryResponseDto.setDescription(itemInventory.getDescription());
             getAllInventoryResponseDto.setDate(itemInventory.getDate().toString());
@@ -135,7 +131,7 @@ public class ItemInventoryServiceImpl implements ItemInventory{
         }
 
 
-        ResponseWrapperDto responseWrapperDto = new ResponseWrapperDto(true,"Fetch Success.", resDtoList);
+        ResponseWrapperDto responseWrapperDto = new ResponseWrapperDto(true, "Fetch Success.", resDtoList);
         return responseWrapperDto;
     }
 }

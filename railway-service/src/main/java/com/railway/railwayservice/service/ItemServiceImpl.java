@@ -11,14 +11,10 @@ import com.railway.railwayservice.entity.ItemsEntity;
 import com.railway.railwayservice.repository.ItemRepository;
 import com.railway.railwayservice.repository.UnitRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;

@@ -2,9 +2,6 @@ package com.railway.railwayservice.dtos;
 
 import lombok.Data;
 
-import java.time.LocalDate;
-import java.time.LocalTime;
-
 @Data
 public class GetAllInventoryResponseDto {
     private Long id;

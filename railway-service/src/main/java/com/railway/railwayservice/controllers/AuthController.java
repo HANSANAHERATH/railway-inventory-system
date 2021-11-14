@@ -13,7 +13,6 @@ import com.railway.railwayservice.repository.UserDetailsRepository;
 import com.railway.railwayservice.security.JwtUtils;
 import com.railway.railwayservice.security.service.UserDetailsImpl;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
