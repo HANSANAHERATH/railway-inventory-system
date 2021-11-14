@@ -8,6 +8,7 @@ import com.railway.railwayservice.dtos.common.ResponseWrapperDto;
 import com.railway.railwayservice.entity.ItemUnits;
 import com.railway.railwayservice.entity.ItemsEntity;
 import com.railway.railwayservice.repository.ItemRepository;
+import com.railway.railwayservice.repository.UnitRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -15,6 +16,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -25,6 +27,9 @@ public class ItemServiceImpl implements ItemService{
 
     @Autowired
     private ItemRepository itemRepository;
+
+    @Autowired
+    private UnitRepository unitRepository;
 
     @Transactional
     @Override
@@ -125,9 +130,16 @@ public class ItemServiceImpl implements ItemService{
         return responseWrapperDto;
     }
 
-    private LocalDateTime stringDateToLocalDateTime(String date){
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
-        LocalDateTime dateTime = LocalDateTime.parse(date, formatter);
-        return dateTime;
+    @Override
+    public ResponseWrapperDto getUnitList() {
+        List<ItemUnits> unitList = unitRepository.findAll();
+        ResponseWrapperDto responseWrapperDto = new ResponseWrapperDto(true,"success",unitList);
+        return responseWrapperDto;
+    }
+
+    private LocalDate stringDateToLocalDateTime(String date){
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        LocalDate localDate = LocalDate.parse(date, formatter);
+        return localDate;
     }
 }

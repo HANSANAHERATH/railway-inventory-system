@@ -13,4 +13,6 @@ public interface ItemService {
     ResponseWrapperDto getItem(long id);
 
     ResponseWrapperDto getAllItem();
+
+    ResponseWrapperDto getUnitList();
 }

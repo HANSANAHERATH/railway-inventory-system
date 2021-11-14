@@ -41,8 +41,14 @@ public class ItemsController {
     }
 
     @DeleteMapping(path = "/{id}")
-    public ResponseEntity<ResponseWrapperDto> deleteItem(@PathParam("id") long id){
+    public ResponseEntity<ResponseWrapperDto> deleteItem(@PathVariable("id") long id){
         ResponseWrapperDto responseWrapperDto = itemService.deleteItem(id);
+        return ResponseEntity.ok(responseWrapperDto);
+    }
+
+    @GetMapping(path = "/unitList")
+    public ResponseEntity<ResponseWrapperDto> getUnitList(){
+        ResponseWrapperDto responseWrapperDto = itemService.getUnitList();
         return ResponseEntity.ok(responseWrapperDto);
     }
 }

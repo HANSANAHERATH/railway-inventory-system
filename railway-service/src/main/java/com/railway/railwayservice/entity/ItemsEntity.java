@@ -4,6 +4,7 @@ import lombok.Data;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Data
@@ -17,7 +18,7 @@ public class ItemsEntity implements Serializable {
 
     private String itemName;
     private String notes;
-    private LocalDateTime date;
+    private LocalDate date;
 
     @OneToOne(targetEntity = ItemUnits.class)
     @JoinColumn(name = "m_units", referencedColumnName = "id")
