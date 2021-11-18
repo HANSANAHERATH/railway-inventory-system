@@ -1,4 +1,4 @@
-import React, { useEffect,useState } from 'react';
+import React, { useEffect } from 'react';
 import { connect } from 'react-redux';
 import { makeStyles } from '@material-ui/core/styles';
 import { withStyles } from '@material-ui/core/styles';
@@ -8,18 +8,11 @@ import ErrorDisplay from 'views/Common/ErrorDisplay';
 import Spinner from 'views/Common/Spinner';
 
 import {
-  fetchSessions,
-  cancelSession,
-  cancelSessionReset,
-  fetchCancelledSessions,
-  notifyAll,
   fetchUnitTyps,
   fetchItems,
 } from 'actions/session';
 import { Redirect } from 'react-router-dom';
-import MuiDialogActions from '@material-ui/core/DialogActions';
-import MuiDialogContent from '@material-ui/core/DialogContent';
-import {Button, TextareaAutosize} from '@material-ui/core';
+import {Button} from '@material-ui/core';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
@@ -27,11 +20,6 @@ import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import TablePagination from '@material-ui/core/TablePagination';
-import Dialog from '@material-ui/core/Dialog';
-import moment from 'moment';
-import Alert from '@material-ui/lab/Alert';
-import DialogTitle from '@material-ui/core/DialogTitle';
-import DialogContentText from '@material-ui/core/DialogContentText';
 import ItemAdd from './ItemAdd';
 
 const useStyles = makeStyles(theme => ({
@@ -108,28 +96,6 @@ const useStyles = makeStyles(theme => ({
     },
 }));
 
-const DialogContent = withStyles(theme => ({
-    root: {
-        padding: theme.spacing(4),
-    },
-}))(MuiDialogContent);
-
-const DialogActions = withStyles(theme => ({
-    root: {
-        padding: theme.spacing(4),
-    },
-}))(MuiDialogActions);
-
-const SubmitButton = withStyles(theme => ({
-    root: {
-        backgroundColor: '#004F8B',
-        width: '100%',
-        '&:hover': {
-            backgroundColor: '#004F8B',
-        },
-        height: '50px',
-    },
-}))(Button);
 
 const StyledTableRow = withStyles(theme => ({
     root: {
@@ -171,83 +137,8 @@ const ItemsList = ({
         setSelection(null);
     };
 
-    const cancelMsgRegex = new RegExp("^[a-zA-Z]+(([',. -][a-zA-Z ])?[a-zA-Z]*)*$");
-
     const classes = useStyles();
-    const [openAlert, setOpenAlert] = React.useState(false);
-    const [notifyAllObj,setNotifyAllObj] = React.useState(false);
     const [select, setSelection] = React.useState(null);
-    const [objectIndex, setObjectIndex] = React.useState([]);
-    const [warningAlertMessage, setWarningAlertMessage] = React.useState('');
-    const [isCancel, setIsCancel] = React.useState(null);
-    const [validationMessage, setValidationMessage] = React.useState('');
-    const [open, setOpen] = React.useState(false);
-    const [cancellationMsg, setCancellationMsg] = React.useState('');
-
-    const handleChangeCancellationMsg = event => {
-        let tempMsg = event.target.value;
-        setCancellationMsg(tempMsg);
-    }
-
-    const handleClickOpen = () => {
-        setOpen(true);
-    };
-
-    const handleClose = () => {
-        setOpen(false);
-    };
-
-    const handleOpenAlert = (session, index, type) => {
-        if(type === 'isCancel'){
-            setObjectIndex({
-                id : session.sid,
-                index: index,
-                session : session,
-            });
-            setWarningAlertMessage("warning - Are you sure you want to cancel the session?");
-            setIsCancel(true);
-        }else {
-            setNotifyAllObj({
-                session_id: session.sid,	
-                moh_codes :[ session.locationDetailsResDto[0].lid],
-                session_date : moment(session.sdate).format('DD-MM-YYYY')
-            });
-            setWarningAlertMessage("warning - Are you sure you want to send notifications?");
-            setIsCancel(false);
-        }
-        setSelection(null);
-        setOpenAlert(true);
-    };
-
-    const handleCloseAlert = () => {
-        setOpenAlert(false);
-        setIsCancel(null);
-        setCancellationMsg('');
-        fetchSessions();
-    };
-
-    const handleCancelSession = () => {
-        cancelSession({
-            session_id: objectIndex.id,
-            msg: cancellationMsg,
-        });
-        handleCloseAlert();
-    }
-
-    function getSessionTime(time) {
-        let hour = '';
-        let minuite = '';
-        let suffix = '';
-
-        if (time) {
-            let hourString = Number(time.split(':')[0]);
-            hour = hourString % 12 || 12;
-            minuite = time.split(':')[1];
-            suffix = hourString >= 12 ? 'PM' : 'AM';
-        }
-
-        return `${hour}:${minuite} ${suffix}`;
-    }
 
     const handleChangePage = (event, newPage) => {
         setPage(newPage);
@@ -283,22 +174,11 @@ const ItemsList = ({
         window.innerWidth < 600 ? setIsMobile(true) : setIsMobile(false);
     }
 
-    const closeAlertMessage = () =>{
-        cancelSessionReset();
-        fetchSessions();
-        updateCancelledSessionList();
-    }
-
-    const handleNotifyAbsorbedSessions = () => {
+   /*  const handleNotifyAbsorbedSessions = () => {
         notifyAll(notifyAllObj);
         fetchSessions();
         handleCloseAlert();
-    }
-
-    const updateCancelledSessionList = () => {
-        fetchCancelledSessions();
-        setSelection(null);
-    }
+    } */
 
     const updateItemList = () => {
       fetchItems();
@@ -443,138 +323,8 @@ const ItemsList = ({
                 </React.Fragment>
               )}
             </div>
-            {/** Notify and cancel confirmation alert */}
-            <Dialog
-              open={openAlert}
-              onClose={handleCloseAlert}
-              aria-labelledby="alert-dialog-title"
-              aria-describedby="alert-dialog-description"
-            >
-              {/*<div className={classes.confirmationDialog}>*/}
-              <DialogTitle id="alert-dialog-title">
-                <Alert variant="filled" severity="warning">
-                  {warningAlertMessage}
-                </Alert>
-              </DialogTitle>
-              <DialogContent>
-                <DialogContentText id="alert-dialog-description">
-                  <span style={{ color: "red" }}>IMPORTANT : </span> After you
-                  click <b>YES</b> you won't be able to revert back your action.
-                </DialogContentText>
-
-                {isCancel ? (
-                  <React.Fragment>
-                    <TextareaAutosize
-                      className={classes.cancellationMsg}
-                      id="cancellationText"
-                      aria-label="minimum height"
-                      rowsMin={4}
-                      placeholder="Cancellation Reason"
-                      value={cancellationMsg || ""}
-                      onChange={handleChangeCancellationMsg}
-                      inputProps={{ maxLength: 30 }}
-                    />
-                    <p>
-                      *Max character length is 30 and does not allow special
-                      characters.
-                    </p>
-                  </React.Fragment>
-                ) : null}
-              </DialogContent>
-              <DialogActions>
-                {isCancel &&
-                cancellationMsg !== "" &&
-                cancellationMsg.split(" ").join("").length > 0 &&
-                cancelMsgRegex.test(cancellationMsg) &&
-                cancellationMsg.length < 31 ? (
-                  <Button
-                    onClick={handleCancelSession}
-                    className={classes.deleteConfirmBtn}
-                  >
-                    Yes
-                  </Button>
-                ) : !isCancel ? (
-                  <Button
-                    onClick={handleNotifyAbsorbedSessions}
-                    className={classes.deleteConfirmBtn}
-                  >
-                    Yes
-                  </Button>
-                ) : null}
-                <Button onClick={handleCloseAlert}> No </Button>
-              </DialogActions>
-            </Dialog>
-
-            {/* ************ Notify and Cancel success/error Alert Box ************* */}
-
-            <Dialog
-              fullWidth
-              maxWidth="sm"
-              onClose={closeAlertMessage}
-              aria-labelledby="customized-dialog-title"
-              open={isOpenAlertMsgProp}
-              className={classes.model}
-              PaperProps={{
-                style: {
-                  borderRadius: "20px",
-                },
-              }}
-              //PaperComponent={PaperComponent}
-            >
-              <DialogContent dividers>
-                {/* {notifyResponse.hasOwnProperty("status") ? (
-                  notifyResponse.status ? (
-                    <Alert severity="success">
-                      {notifyResponse?.error_msg}
-                    </Alert>
-                  ) : (
-                    <Alert severity="error">{notifyResponse?.error_msg}</Alert>
-                  )
-                ) : null}
-                {cancelResponse.hasOwnProperty("status") ? (
-                  cancelResponse.status ? (
-                    <Alert severity="success">
-                      {cancelResponse?.error_msg}
-                    </Alert>
-                  ) : (
-                    <Alert severity="error">{cancelResponse?.error_msg}</Alert>
-                  )
-                ) : null} */}
-              </DialogContent>
-              <DialogActions>
-                <SubmitButton
-                  className={classes.buttonStyle}
-                  autoFocus
-                  onClick={closeAlertMessage}
-                  color="primary"
-                  variant="contained"
-                >
-                  OK
-                </SubmitButton>
-              </DialogActions>
-            </Dialog>
           </Paper>
         </main>
-
-        {/** Date Validation Dialog */}
-        <Dialog
-          open={open}
-          onClose={handleClose}
-          aria-labelledby="alert-dialog-title"
-          aria-describedby="alert-dialog-description"
-        >
-          <DialogTitle id="alert-dialog-title">Error</DialogTitle>
-          <DialogContent>
-            <DialogContentText id="alert-dialog-description">
-              {validationMessage}
-            </DialogContentText>
-          </DialogContent>
-          <DialogActions>
-            <Button onClick={handleClose} color="primary" autoFocus>
-              Close
-            </Button>
-          </DialogActions>
-        </Dialog>
       </div>
     );
 };
@@ -584,8 +334,6 @@ function mapStateToProps({ session, signin }) {
     // what inside the reducer
     let loginSuccess = sessionStorage.getItem('loginSuccess');
     let {  loading, items } = session;
-    let fetchUnitTypsList = [];
-    // define attr inside the objs
     return {
         loginSuccess,
         loading: loading,
