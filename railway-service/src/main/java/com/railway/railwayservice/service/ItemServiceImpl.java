@@ -5,6 +5,7 @@ import com.railway.railwayservice.Exceptions.ItemCountDecrementException;
 import com.railway.railwayservice.Exceptions.ItemNotFoundException;
 import com.railway.railwayservice.Exceptions.RuntimeExceptionHere;
 import com.railway.railwayservice.dtos.ItemCreateRequestDto;
+import com.railway.railwayservice.dtos.LookupResponseDto;
 import com.railway.railwayservice.dtos.common.ResponseWrapperDto;
 import com.railway.railwayservice.entity.ItemUnits;
 import com.railway.railwayservice.entity.ItemsEntity;
@@ -16,6 +17,7 @@ import org.springframework.stereotype.Service;
 import javax.transaction.Transactional;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -136,7 +138,20 @@ public class ItemServiceImpl implements ItemService{
         ResponseWrapperDto responseWrapperDto = null;
 
         List<ItemsEntity> isExisting = itemRepository.findByIsDeleted(false);
-       responseWrapperDto = new ResponseWrapperDto(true, "Get All Items Successful", isExisting);
+        List<LookupResponseDto> responseList = new ArrayList<>();
+        isExisting.forEach(it -> {
+            LookupResponseDto itemResponseDto = new LookupResponseDto();
+            itemResponseDto.setId(it.getId());
+            itemResponseDto.setItemName(it.getItemName());
+            itemResponseDto.setItemUnits(it.getItemUnits());
+            itemResponseDto.setBalance(it.getBalance());
+            itemResponseDto.setDate(it.getDate());
+            itemResponseDto.setDeleted(it.isDeleted());
+            itemResponseDto.setNotes(it.getNotes());
+            itemResponseDto.setQuantity(it.getQuantity());
+            responseList.add(itemResponseDto);
+        });
+       responseWrapperDto = new ResponseWrapperDto(true, "Get All Items Successful", responseList);
         return responseWrapperDto;
     }
 

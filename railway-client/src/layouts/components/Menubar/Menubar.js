@@ -111,40 +111,6 @@ const Menubar = ({ logout, loginsuccess }) => {
                 variant="dense"
                 className={clsx(classes.toolBar)}
               >
-                {/* <RouterLink to="/dashboard">
-                            <Typography
-                                inline="true"
-                                component="h2"
-                                variant="h5"
-                                className={
-                                    (classes.subtitle,
-                                        currentLocation.pathname ===
-                                        '/dashboard'
-                                            ? classes.selectedLinkItem
-                                            : classes.linkItem)
-                                }
-                            >
-                                Dashboard
-                            </Typography>
-                        </RouterLink> */}
-
-                {/* <RouterLink to="/location">
-                            <Typography
-                                inline="true"
-                                component="h2"
-                                variant="h5"
-                                className={
-                                    (classes.subtitle,
-                                        currentLocation.pathname ===
-                                        '/location'
-                                            ? classes.selectedLinkItem
-                                                : classes.linkItem)
-                                    }
-                            >
-                                Location dashboard
-                            </Typography>
-                        </RouterLink> */}
-
                 <RouterLink to="/item-list">
                   <Typography
                     inline="true"

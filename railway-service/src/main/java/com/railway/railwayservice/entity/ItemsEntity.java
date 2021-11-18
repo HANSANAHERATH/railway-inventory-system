@@ -28,8 +28,7 @@ public class ItemsEntity implements Serializable {
     private float quantity;
     private float balance = 0;
 
-    @OneToMany(mappedBy = "itemsEntity", cascade = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.DETACH,
-            CascadeType.REFRESH })
+    @OneToMany(mappedBy = "itemsEntity", cascade = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.DETACH,CascadeType.REFRESH })
     private Set<ItemInventory> itemInventory;
 
     public void addItemInventory(ItemInventory itemInventoryObj) {

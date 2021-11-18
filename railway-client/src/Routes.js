@@ -7,8 +7,8 @@ import { Minimal as MinimalLayout } from './layouts';
 import {
     SignIn as SignInView,
     NotFound as NotFoundView,
-    CenterList as CenterListView,
-    SessionList as SessionListView,
+    ItemInventory as ItemInventoryView,
+    ItemsList as ItemsListView,
 } from './views';
 
 const Routes = () => {
@@ -25,13 +25,13 @@ const Routes = () => {
                 path="/sign-in"
             />
             <RouteWithLayout
-                component={CenterListView}
+                component={ItemInventoryView}
                 exact
                 layout={MinimalLayout}
                 path="/update-inventory"
             />
             <RouteWithLayout
-                component={SessionListView}
+                component={ItemsListView}
                 exact
                 layout={MinimalLayout}
                 path="/item-list"
