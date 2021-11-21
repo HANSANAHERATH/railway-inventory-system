@@ -1,3 +1,3 @@
 default:
-	$(MAKE) -C client
-	@ docker build -t team_track/nginx:latest .
+	$(MAKE) -C railway-service
+	@ docker build -t railway_system/nginx:latest .
