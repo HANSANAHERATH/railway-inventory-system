@@ -3,9 +3,7 @@ package com.railway.railwayservice.service;
 import com.railway.railwayservice.Exceptions.ItemCountDecrementException;
 import com.railway.railwayservice.Exceptions.ItemNotFoundException;
 import com.railway.railwayservice.Exceptions.ItemQuantityException;
-import com.railway.railwayservice.dtos.CreateInventoryDto;
-import com.railway.railwayservice.dtos.GetAllInventoryResponseDto;
-import com.railway.railwayservice.dtos.LookupResponseDto;
+import com.railway.railwayservice.dtos.*;
 import com.railway.railwayservice.dtos.common.ResponseWrapperDto;
 import com.railway.railwayservice.entity.ItemUnits;
 import com.railway.railwayservice.entity.ItemsEntity;
@@ -38,7 +36,12 @@ public class ItemInventoryServiceImpl implements ItemInventory {
 
     @Override
     public ResponseWrapperDto getItemLookup(String itemName) throws Exception {
-        List<ItemsEntity> itemsEntities = itemRepository.findByItemNameIsContainingAndIsDeleted(itemName, false);
+        List<ItemsEntity> itemsEntities = new ArrayList<>();
+        if(itemName == null ){
+            itemsEntities = itemRepository.findAllByIsDeleted(false);
+        }else {
+            itemsEntities = itemRepository.findByItemNameIsContainingAndIsDeleted(itemName, false);
+        }
         List<LookupResponseDto> lookupResponseDtos = new ArrayList<>();
 
         itemsEntities.stream().forEach(i -> {
@@ -130,8 +133,23 @@ public class ItemInventoryServiceImpl implements ItemInventory {
             resDtoList.add(getAllInventoryResponseDto);
         }
 
+        InvenoryResponseDto invenoryResponseDto = new InvenoryResponseDto();
+        BalanceDto balanceDto = getBalance(id);
+        invenoryResponseDto.setGetAllInventoryResponseDtos(resDtoList);
+        invenoryResponseDto.setBalanceDto(balanceDto);
 
-        ResponseWrapperDto responseWrapperDto = new ResponseWrapperDto(true, "Fetch Success.", resDtoList);
+        ResponseWrapperDto responseWrapperDto = new ResponseWrapperDto(true, "Fetch Success.", invenoryResponseDto);
         return responseWrapperDto;
+    }
+    
+    private BalanceDto getBalance(Long id) throws ItemQuantityException{
+        Optional<ItemsEntity> entity = itemRepository.findByIdAndIsDeleted(id, false);
+        if(!entity.isPresent()){
+            throw new ItemNotFoundException();
+        }
+        BalanceDto balanceDto = new BalanceDto();
+        balanceDto.setBalance(Float.toString(entity.get().getBalance()));
+        balanceDto.setTotalQuantity(Float.toString(entity.get().getQuantity()));
+        return balanceDto;
     }
 }

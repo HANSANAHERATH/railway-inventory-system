@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { connect } from "react-redux";
 import { makeStyles } from "@material-ui/core/styles";
 import { withStyles } from "@material-ui/core/styles";
@@ -19,6 +19,9 @@ import {
 } from "@material-ui/core";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import AddInventory from "./AddInventory";
+import { getInventoryList, getLookupValues, getInventoryListReset } from "actions/ItemInventory";
+import MuiAlert from "@material-ui/lab/Alert";
+//import CircularProgress from '@mui/material/CircularProgress';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -100,7 +103,18 @@ const useStyles = makeStyles((theme) => ({
     justifyContent: "center",
     display: "flex",
   },
+  alertWrapper: {
+    fontSize: '20px',
+    alignItems: 'center',
+    height: '70px',
+    lineHeight: '30px',
+
+  }
 }));
+
+function Alert(props) {
+  return <MuiAlert elevation={6} variant="filled" {...props} />;
+}
 
 const StyledTableRow = withStyles((theme) => ({
   root: {
@@ -125,6 +139,11 @@ const ItemInventoryList = ({
   error,
   loginSuccess,
   itemsInventoryList,
+  getLookupValues,
+  itemList,
+  getInventoryList,
+  balanceDto,
+  getInventoryListReset,
 }) => {
   const classes = useStyles();
 
@@ -132,9 +151,21 @@ const ItemInventoryList = ({
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
   const [select, setSelection] = React.useState(null);
+  const [item, setItem] = React.useState(null);
 
+  const handleSearchFieldChange = (event, value) => {
+    setSearchItemName(value || "");
+    if (value !== null) {
+      getInventoryList(value.id);
+      setItem(value);
+    }else{
+      getInventoryListReset();
+    }
+  };
 
-  const handleSearchFieldChange = (event, value) => {};
+  useEffect(() => {
+    getLookupValues();
+  }, [getLookupValues]);
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
@@ -147,7 +178,13 @@ const ItemInventoryList = ({
 
   const updateItemList = () => {
     setSelection(null);
-  }
+    setItem();
+  };
+
+  const fetchExistingItemsInventory = () => {
+    getInventoryList(item?.id);
+    getLookupValues();
+  };
 
   return !loginSuccess ? (
     <Redirect to="/sign-in" />
@@ -170,11 +207,16 @@ const ItemInventoryList = ({
                 Item Inventory
               </Typography>
             </div>
-            <AddInventory
-              seletedRowData={select}
-              setSelection={setSelection}
-              updateItemList={updateItemList}
-            />
+            {searchItemName ? (
+              <AddInventory
+                seletedRowData={select}
+                setSelection={setSelection}
+                updateItemList={updateItemList}
+                item={item}
+                random={Math.random()}
+                fetchExistingItemsInventory={fetchExistingItemsInventory}
+              />
+            ) : null}
           </div>
           <br />
           <br />
@@ -187,8 +229,8 @@ const ItemInventoryList = ({
                 className={classes.inputFeild}
                 id="unitType"
                 value={searchItemName}
-                options={[]}
-                getOptionLabel={(option) => option?.unitName || ""}
+                options={itemList}
+                getOptionLabel={(option) => option?.itemName || ""}
                 renderInput={(params) => (
                   <TextField {...params} variant="outlined" />
                 )}
@@ -199,6 +241,16 @@ const ItemInventoryList = ({
             </div>
             <br />
             <br />
+            {searchItemName !== "" ? (
+              <div>
+                <Alert severity="info" className={classes.alertWrapper}>
+                  <div>Total Quantity: {balanceDto?.totalQuantity} {item.itemUnits.unitName}</div>
+                  <div>Balance: {balanceDto?.balance} {item.itemUnits.unitName}</div>
+                </Alert>
+                <br />
+                <br />
+              </div>
+            ) : null}
 
             {itemsInventoryList?.length === 0 ? (
               <Typography component="h6" variant="h6" align="center">
@@ -213,22 +265,31 @@ const ItemInventoryList = ({
                   >
                     <TableHead>
                       <TableRow>
-                        <StyledTableCell width={"10%"}>
-                          ITEM NAME
-                        </StyledTableCell>
                         <StyledTableCell width={"10%"}>DATE</StyledTableCell>
                         <StyledTableCell width={"10%"}>
-                          QUANTITY
+                          QUANTITY ({searchItemName?.itemUnits?.unitName})
                         </StyledTableCell>
                         <StyledTableCell width={"10%"}>
-                          UNIT TYPE
+                          REFERENCE
                         </StyledTableCell>
-                        <StyledTableCell width={"10%"}>NOTES</StyledTableCell>
-                        <StyledTableCell width={"10%"}>ACTION</StyledTableCell>
+                        <StyledTableCell width={"10%"}>
+                          SHED STORE NO
+                        </StyledTableCell>
+                        <StyledTableCell width={"10%"}>
+                          DESCRIPTION
+                        </StyledTableCell>
+                        <StyledTableCell width={"10%"}>
+                          SUPERVISOR NAME
+                        </StyledTableCell>
+                        <StyledTableCell width={"10%"}>
+                          HANDOVER TO
+                        </StyledTableCell>
+                        <StyledTableCell width={"10%"}>
+                          ADDITIONAL NOTES
+                        </StyledTableCell>
                       </TableRow>
                     </TableHead>
                     <TableBody>
-                      {console.log(itemsInventoryList?.length)}
                       {itemsInventoryList
                         ?.slice(
                           page * rowsPerPage,
@@ -236,16 +297,24 @@ const ItemInventoryList = ({
                         )
                         .map((item, index) => (
                           <StyledTableRow key={item.id}>
-                            <StyledTableCell component="th" scope="row">
-                              {item?.itemName}
-                            </StyledTableCell>
                             <StyledTableCell>{item?.date}</StyledTableCell>
                             <StyledTableCell>{item?.quantity}</StyledTableCell>
+                            <StyledTableCell>{item?.reference}</StyledTableCell>
                             <StyledTableCell>
-                              {item?.itemUnits?.unitName}
+                              {item?.shedStoreNo}
                             </StyledTableCell>
-                            <StyledTableCell>{item?.notes}</StyledTableCell>
-                            <StyledTableCell></StyledTableCell>
+                            <StyledTableCell>
+                              {item?.description}
+                            </StyledTableCell>
+                            <StyledTableCell>
+                              {item?.supervisorName}
+                            </StyledTableCell>
+                            <StyledTableCell>
+                              {item?.handoverTo}
+                            </StyledTableCell>
+                            <StyledTableCell>
+                              {item?.additionalNote}
+                            </StyledTableCell>
                           </StyledTableRow>
                         ))}
                     </TableBody>
@@ -269,14 +338,18 @@ const ItemInventoryList = ({
   );
 };
 
-function mapStateToProps({}) {
+function mapStateToProps({ itemInventory }) {
   let loginSuccess = sessionStorage.getItem("loginSuccess");
   return {
     loginSuccess,
-    loading: false,
+    loading: itemInventory.loading,
+    itemList: itemInventory.lookups.data,
     error: null,
-    itemsInventoryList: [{ "": "" }],
+    itemsInventoryList: itemInventory?.inventory?.data,
+    balanceDto: itemInventory?.inventory?.balanceDto,
   };
 }
 
-export default connect(mapStateToProps, null)(ItemInventoryList);
+export default connect(mapStateToProps, { getLookupValues, getInventoryList,getInventoryListReset })(
+  ItemInventoryList
+);

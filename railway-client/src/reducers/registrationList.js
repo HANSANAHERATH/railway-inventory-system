@@ -3,10 +3,10 @@ import {
     FETCH_REGISTERED_USERS_SUCCESS,
     FETCH_REGISTERED_USERS_FAILED,
     RESET_REGISTERED_USERS,
-    FETCH_SELECTED_SESSIONS,
-    FETCH_SELECTED_SESSIONS_SUCCESS,
-    FETCH_SELECTED_SESSIONS_FAILED,
-    FETCH_SELECTED_SESSIONS_RESET,
+   // FETCH_SELECTED_SESSIONS,
+   // FETCH_SELECTED_SESSIONS_SUCCESS,
+   // FETCH_SELECTED_SESSIONS_FAILED,
+   // FETCH_SELECTED_SESSIONS_RESET,
     UPDATE_STATE_REGISTER,
 } from '../actions/types';
 
@@ -71,7 +71,7 @@ const registrationListReducer = (state = initialState, action) => {
             };
 
         /** Selected Session for Dashboard */
-        case FETCH_SELECTED_SESSIONS:
+       /*  case FETCH_SELECTED_SESSIONS:
             return {
                 ...state,
                 loading: true,
@@ -79,8 +79,8 @@ const registrationListReducer = (state = initialState, action) => {
                     ...state.sessions,
                     loading: true,
                 }
-            };
-        case FETCH_SELECTED_SESSIONS_SUCCESS:
+            }; */
+        /* case FETCH_SELECTED_SESSIONS_SUCCESS:
             return {
                 ...state,
                 loading: false,
@@ -101,8 +101,8 @@ const registrationListReducer = (state = initialState, action) => {
                     selected: action.payload.data,
                     error: "",
                 }
-            };
-        case FETCH_SELECTED_SESSIONS_RESET:
+            }; */
+        /* case FETCH_SELECTED_SESSIONS_RESET:
             return {
                 ...state,
                 loading: false,
@@ -112,7 +112,7 @@ const registrationListReducer = (state = initialState, action) => {
                     selected: [],
                     error: undefined,
                 }
-            };
+            }; */
         default:
             return state;
     }

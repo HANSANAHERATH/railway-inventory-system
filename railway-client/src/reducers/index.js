@@ -1,10 +1,8 @@
 import { combineReducers } from 'redux';
 import signinReducer from './signin';
-import registrationListReducer from './registrationList';
 import sessionReducer from './session';
 import tokenReducer from './token';
-import dashboardReducer from './dashboard';
-import locationReducer from './location';
+import ItemInventoryReducer from './ItemInventory';
 
 /**
  * Redux Store
@@ -13,9 +11,7 @@ import locationReducer from './location';
 // list the reducers list
 export default combineReducers({
     signin: signinReducer,
-    registrationList: registrationListReducer,
     session: sessionReducer,
     token: tokenReducer,
-    dashboard: dashboardReducer,
-    location: locationReducer,
+    itemInventory: ItemInventoryReducer,
 });

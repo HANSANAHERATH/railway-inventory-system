@@ -3,24 +3,24 @@ import { call, all, put, takeLatest } from 'redux-saga/effects';
 import registrationListApi from '../services/registrationApi';
 
 import { 
-    FETCH_REGISTERED_USERS,
-    FETCH_SELECTED_SESSIONS,
+    //FETCH_REGISTERED_USERS,
+   // FETCH_SELECTED_SESSIONS,
 } from '../actions/types';
 
 import {
-    fetchRegisteredUsersSuccess,
+    /* fetchRegisteredUsersSuccess,
     fetchRegisteredUsersFailed,
     fetchSelectedSessionSuccess,
-    fetchSelectedSessionFailed,
+    fetchSelectedSessionFailed, */
 } from '../actions/registrationList';
 
 function* fetchRegisteredUsersForSession({ payload }) {
     try {
         const data = yield call(registrationListApi.users.getRegisteredUsers,payload);
         if(data.status){
-            yield put(fetchRegisteredUsersSuccess(data));
+            //yield put(fetchRegisteredUsersSuccess(data));
         }else{
-            yield put(fetchRegisteredUsersFailed(data));
+           // yield put(fetchRegisteredUsersFailed(data));
         }
     } catch (err) {
         let data = {
@@ -30,7 +30,7 @@ function* fetchRegisteredUsersForSession({ payload }) {
             "timestamp": "2021-06-14 17:40:23.074",
             "error_code": null
         }
-        yield put(fetchRegisteredUsersFailed(data));
+       // yield put(fetchRegisteredUsersFailed(data));
     }
 }
 
@@ -39,9 +39,9 @@ function* fetchSelectedSessionList({ payload }) {
     try {
         const data = yield call(registrationListApi.dashboard.getSessionList,payload);
         if(data.status){
-            yield put(fetchSelectedSessionSuccess(data));
+          //  yield put(fetchSelectedSessionSuccess(data));
         }else {
-            yield put(fetchSelectedSessionFailed(data));
+          //  yield put(fetchSelectedSessionFailed(data));
         }     
     } catch (err) {
         let data = {
@@ -51,13 +51,13 @@ function* fetchSelectedSessionList({ payload }) {
             "timestamp": "2021-06-14 17:40:23.074",
             "error_code": null
         }
-        yield put(fetchSelectedSessionFailed(data));
+        //yield put(fetchSelectedSessionFailed(data));
     }
 }
 
 function* watchRegistrationListActions() {
-    yield takeLatest(FETCH_REGISTERED_USERS, fetchRegisteredUsersForSession);
-    yield takeLatest(FETCH_SELECTED_SESSIONS, fetchSelectedSessionList);
+   // yield takeLatest(FETCH_REGISTERED_USERS, fetchRegisteredUsersForSession);
+   // yield takeLatest(FETCH_SELECTED_SESSIONS, fetchSelectedSessionList);
 }
 
 export default function* registrationListSaga() {

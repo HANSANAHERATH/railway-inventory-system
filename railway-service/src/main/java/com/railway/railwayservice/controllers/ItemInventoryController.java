@@ -14,8 +14,8 @@ public class ItemInventoryController {
     @Autowired
     private ItemInventory itemInventory;
 
-    @GetMapping("/{itemName}")
-    public ResponseEntity<ResponseWrapperDto> getItemLookup(@PathVariable("itemName") String itemName) throws Exception {
+    @GetMapping("/lookup")
+    public ResponseEntity<ResponseWrapperDto> getItemLookup(@RequestParam String itemName) throws Exception {
         ResponseWrapperDto responseWrapperDto = itemInventory.getItemLookup(itemName);
         return ResponseEntity.ok(responseWrapperDto);
     }

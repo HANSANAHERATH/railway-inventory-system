@@ -135,19 +135,7 @@ export const FETCH_DISTRICT_FAILED = 'FETCH_DISTRICT_FAILED';
 * ================== Fetch Cancelled Sessions Ends ============================
 */
 
- /**
- * ================== Selected Sessions For Dashboard ============================
- */
-
-  export const FETCH_SELECTED_SESSIONS = 'FETCH_SELECTED_SESSIONS';
-  export const FETCH_SELECTED_SESSIONS_SUCCESS = 'FETCH_SELECTED_SESSIONS_SUCCESS';
-  export const FETCH_SELECTED_SESSIONS_FAILED = 'FETCH_SELECTED_SESSIONS_FAILED';
-  export const FETCH_SELECTED_SESSIONS_RESET = 'FETCH_SELECTED_SESSIONS_RESET';
-
-/**
- * ================== Selected Sessions For Dashboard Ends ============================
- */
-
+ 
 
 
 /**---------------------------------------------------------------------------------- */
@@ -212,3 +200,43 @@ export const RESET_FORM_ITEM_SUCCESS = 'RESET_FORM_ITEM_SUCCESS';
 export const DELETE_FORM_ITEM = 'DELETE_FORM_ITEM';
 export const DELETE_FORM_ITEM_SUCCESS = 'DELETE_FORM_ITEM_SUCCESS';
 export const DELETE_FORM_ITEM_FAILED = 'DELETE_FORM_ITEM_FAILED';
+
+/**
+ * ================== Selected Sessions For Dashboard ============================
+ */
+
+ export const FETCH_LOOKUP_ITEMS = 'FETCH_LOOKUP_ITEMS';
+ export const FETCH_LOOKUP_ITEMS_SUCCESS = 'FETCH_LOOKUP_ITEMS_SUCCESS';
+ export const FETCH_LOOKUP_ITEMS_FAILED = 'FETCH_LOOKUP_ITEMS_FAILED';
+ export const FETCH_LOOKUP_ITEMS_RESET = 'FETCH_LOOKUP_ITEMS_RESET';
+
+/**
+* ================== Selected Sessions For Dashboard Ends ============================
+*/
+
+/**
+ * ================== Create Inventory ============================
+ */
+
+ export const CREATE_INVENTORY = 'CREATE_INVENTORY';
+ export const CREATE_INVENTORY_SUCCESS = 'CREATE_INVENTORY_SUCCESS';
+ export const CREATE_INVENTORY_FAILED = 'CREATE_INVENTORY_FAILED';
+ export const CREATE_INVENTORY_RESET = 'CREATE_INVENTORY_RESET';
+
+/**
+* ================== Create Inventory Ends ============================
+*/
+
+/**
+ * ================== get created Inventory ============================
+ */
+
+ export const FETCH_INVENTORY = 'FETCH_INVENTORY';
+ export const FETCH_INVENTORY_SUCCESS = 'FETCH_INVENTORY_SUCCESS';
+ export const FETCH_INVENTORY_FAILED = 'FETCH_INVENTORY_FAILED';
+ export const FETCH_INVENTORY_RESET = 'FETCH_INVENTORY_RESET';
+
+/**
+* ================== get created Inventory Ends ============================
+*/
+

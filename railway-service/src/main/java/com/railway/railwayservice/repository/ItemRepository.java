@@ -14,4 +14,6 @@ public interface ItemRepository extends JpaRepository<ItemsEntity,Long> {
     List<ItemsEntity> findByIsDeleted(boolean IsDeleted);
 
     List<ItemsEntity> findByItemNameIsContainingAndIsDeleted(String name, boolean isDeleted);
+
+    List<ItemsEntity> findAllByIsDeleted(boolean isDeleted);
 }

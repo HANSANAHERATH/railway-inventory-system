@@ -3,40 +3,19 @@ import { connect } from "react-redux";
 import { withStyles, makeStyles } from "@material-ui/core/styles";
 import Button from "@material-ui/core/Button";
 import Dialog from "@material-ui/core/Dialog";
-import MuiDialogTitle from "@material-ui/core/DialogTitle";
 import MuiDialogContent from "@material-ui/core/DialogContent";
 import MuiDialogActions from "@material-ui/core/DialogActions";
 import Typography from "@material-ui/core/Typography";
 import AddIcon from "@material-ui/icons/Add";
-import DeleteIcon from "@material-ui/icons/Delete";
 import TextField from "@material-ui/core/TextField";
-import Autocomplete from "@material-ui/lab/Autocomplete";
 import "date-fns";
-import DateFnsUtils from "@date-io/date-fns";
-import {
-  MuiPickersUtilsProvider,
-  KeyboardDatePicker,
-} from "@material-ui/pickers";
 import MuiAlert from "@material-ui/lab/Alert";
-import {
-  resetItemCreateForm,
-  fetchCancelledSessions,
-  submitFormItemCreate,
-  submitFormItemUpdate,
-  submitFormItemRemove,
-} from "actions/session";
-import IconButton from "@material-ui/core/IconButton";
-import CloseIcon from "@material-ui/icons/Close";
-import moment from "moment";
 import Paper from "@material-ui/core/Paper";
 import Draggable from "react-draggable";
 
-import CheckBoxOutlineBlankIcon from "@material-ui/icons/CheckBoxOutlineBlank";
-import CheckBoxIcon from "@material-ui/icons/CheckBox";
 import DialogTitle from "./DialogTitle";
-
-const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
-const checkedIcon = <CheckBoxIcon fontSize="small" />;
+import { InputAdornment } from "@material-ui/core";
+import { submitItemInventoryCreate, submitItemInventoryCreateReset } from "actions/ItemInventory";
 
 function Alert(props) {
   return <MuiAlert elevation={6} variant="filled" {...props} />;
@@ -151,23 +130,21 @@ const AddInventory = ({
   submitFormItemRemove,
   confirmation,
   seletedRowData,
-  resetItemCreateForm,
   error,
-  unitTypeList,
   submitFormItemCreate,
-  submitFormItemUpdate,
-  updateItemList,
+  item,
+  submitItemInventoryCreate,
+  submitItemInventoryCreateReset,
+  fetchExistingItemsInventory,
+  random,
 }) => {
   const classes = useStyles();
-  const [selectedDataRow, setSelectedDataRow] = React.useState("");
 
   useEffect(() => {
     if (seletedRowData) {
-      setSelectedDataToForm(seletedRowData.select);
       setEditMode(true);
       setOpen(true);
       setLoading(false);
-      setSelectedDataRow(seletedRowData.select);
     }
   }, [seletedRowData]);
 
@@ -187,42 +164,35 @@ const AddInventory = ({
 
   /** Handle model from the create session button End */
 
-  const todayDate = new Date();
-  const tomorrowDate = new Date(todayDate);
-  tomorrowDate.setDate(tomorrowDate.getDate() + 1);
-
   const [loading, setLoading] = React.useState(false);
   const [open, setOpen] = React.useState(false);
-  const [openAlert, setOpenAlert] = React.useState(false);
   const [editMode, setEditMode] = React.useState(false);
 
   const [itemName, setItemName] = React.useState("");
   const [quantity, setQuantity] = React.useState("");
   const [unitType, setUnitType] = React.useState([]);
   const [notes, setNotes] = React.useState("");
-  const [date, setDate] = React.useState(
-    moment(todayDate).format(moment.HTML5_FMT.DATE)
-  );
+  const [reference, setReference] = React.useState("");
+  const [shedStoreNo, setShedStoreNo] = React.useState("");
+  const [description, setDescription] = React.useState("");
+  const [supervisorName, setSupervisorName] = React.useState("");
+  const [handoverTo, setHandoverTo] = React.useState("");
 
   const validForm =
     itemName !== "" && quantity !== "" && unitType !== "" && notes !== "";
 
-  /** Change state when change inputs */
+  useEffect(() => {
+    if (item != null) {
+      setItemName(item.itemName);
+      setUnitType(item?.itemUnits?.unitName);
+    }
+  }, [item,random]);
 
-  const handleItemNameChange = (event) => {
-    let temp = event.target.value || "";
-    setItemName(temp);
-  };
+  /** Change state when change inputs */
 
   const handleNotesChange = (event) => {
     let temp = event.target.value || "";
     setNotes(temp);
-  };
-
-  const handleSessionDateChange = (event) => {
-    let tmpDate = new Date(event);
-    tmpDate = moment(tmpDate).format(moment.HTML5_FMT.DATE);
-    setDate(tmpDate);
   };
 
   const handleQuantityChange = (event) => {
@@ -230,80 +200,70 @@ const AddInventory = ({
     setQuantity(tmpSessionVaccines);
   };
 
-  const handleUnitTypeChange = (event, value) => {
-    setUnitType(value || "");
+  const handleReferenceChange = (event) => {
+    setReference(event.target.value);
+  };
+
+  const handleShedStoreNoChange = (event) => {
+    setShedStoreNo(event.target.value);
+  };
+
+  const handleDescriptionChange = (event) => {
+    setDescription(event.target.value);
+  };
+
+  const handleSupervisorNameChange = (event) => {
+    setSupervisorName(event.target.value);
+  };
+
+  const handleHandoverToChange = (event) => {
+    setHandoverTo(event.target.value);
   };
 
   /** Change state when change input End */
 
   /** Submit form for create a session */
-  const handleSessionCreateSubmission = () => {
+  const handleInventoryCreateSubmission = () => {
     setLoading(true);
-    submitFormItemCreate({
+    submitItemInventoryCreate({
       id: null,
-      date: moment(date)
-        .format(moment.HTML5_FMT.DATE)
-        .toString(),
-      itemName: itemName,
-      notes: notes,
+      additionalNote: notes,
       quantity: parseFloat(quantity),
       unitId: unitType?.id,
       userId: 0,
+      reference: reference,
+      shedStoreNo: shedStoreNo,
+      description: description,
+      supervisorName: supervisorName,
+      handoverTo: handoverTo,
+      itemsEntityId: item?.id,
+
     });
   };
   /** Submit form for create a session End*/
 
-  /** submit for update a session  */
-  const handleSessionUpdateSubmission = () => {
-    setLoading(true);
-    submitFormItemUpdate({
-      id: selectedDataRow.id,
-      date: moment(date)
-        .format(moment.HTML5_FMT.DATE)
-        .toString(),
-      itemName: itemName,
-      notes: notes,
-      quantity: parseFloat(quantity),
-      unitId: unitType?.id,
-      userId: 0,
-    });
-  };
-  /** submit for update a session END */
-
-  /** set data to form when update session */
-  const setSelectedDataToForm = (selectedData) => {
-    const selectedUnitType = unitTypeList.filter(
-      (res) => res.id === selectedData.itemUnits.id
-    )[0];
-
-    setItemName(selectedData.itemName);
-    setQuantity(selectedData.quantity);
-    setUnitType(selectedUnitType);
-    setNotes(selectedData.notes);
-    setDate(selectedData.date);
-  };
-
-  /** set data to form when update session End*/
-
   /** Reset Form function */
   const handleSessionFormReset = (event) => {
-    resetItemCreateForm({});
     handleResetSessionObj();
+    submitItemInventoryCreateReset({});
     setOpen(false);
-    updateItemList();
+    fetchExistingItemsInventory();
   };
 
   const handleResetSessionObj = () => {
     setItemName("");
     setQuantity("");
-    setUnitType("");
     setNotes("");
-    setDate(todayDate);
+    setReference("");
+    setShedStoreNo("");
+    setDescription("");
+    setSupervisorName("");
+    setHandoverTo("");
   };
   /** Reset Form function */
 
   const sessionCreated =
-    confirmation.payload?.statusMessage === "Saved Successful";
+    confirmation.payload?.statusMessage === "Create Success.";
   const sessionUpdated =
     confirmation.payload?.statusMessage === "Update Successful";
   const notEdit = !(sessionCreated || sessionUpdated);
@@ -363,7 +323,7 @@ const AddInventory = ({
           ) : sessionUpdated && editMode ? (
             <Alert severity="success">Item updated.</Alert>
           ) : sessionCreated ? (
-            <Alert severity="success">New Item created.</Alert>
+            <Alert severity="success">New Inventory created.</Alert>
           ) : sessionDeleted ? (
             <Alert severity="success">Item removed.</Alert>
           ) : null}
@@ -377,38 +337,13 @@ const AddInventory = ({
                 type="text"
                 id="itemName"
                 variant="outlined"
-                onChange={handleItemNameChange}
+                disabled
+                //onChange={handleItemNameChange}
                 value={itemName || ""}
               />
               <br />
               <br />
 
-              {/**  Select Date Time  */}
-              <div className={classes.inputrow}>
-                <MuiPickersUtilsProvider utils={DateFnsUtils}>
-                  <KeyboardDatePicker
-                    className={classes.datePicker}
-                    label="Date"
-                    disableToolbar
-                    // disabled={editMode && isAbsorb}
-                    variant="inline"
-                    format="dd-MM-yyyy"
-                    margin="normal"
-                    id="sessionDate"
-                    value={date || todayDate}
-                    keyboardbuttonprops={{
-                      "aria-label": "change date",
-                    }}
-                    minDate={!editMode ? todayDate : date}
-                    autoOk={true}
-                    onChange={handleSessionDateChange}
-                  />
-                </MuiPickersUtilsProvider>
-              </div>
-              <br />
-              <br />
-
-              {/**  Select Vaccine Count  */}
               <div className={classes.inputLabel}>Quantity</div>
               <TextField
                 className={classes.inputFeild}
@@ -419,33 +354,87 @@ const AddInventory = ({
                 onChange={handleQuantityChange}
                 value={quantity || ""}
                 InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">{unitType}</InputAdornment>
+                  ),
                   inputProps: { min: 0, max: 100000 },
                 }}
               />
+
               <br />
               <br />
 
-              {/** Age group */}
-              <div className={classes.inputLabel}>Unit Type</div>
-              <Autocomplete
+              <div className={classes.inputLabel}>Reference</div>
+              <TextField
                 className={classes.inputFeild}
-                id="unitType"
-                value={unitType}
-                options={unitTypeList}
-                getOptionLabel={(option) => option?.unitName || ""}
-                renderInput={(params) => (
-                  <TextField {...params} variant="outlined" />
-                )}
-                onChange={(event, newValue) => {
-                  handleUnitTypeChange(event, newValue);
-                }}
+                required
+                type="text"
+                id="reference"
+                variant="outlined"
+                onChange={handleReferenceChange}
+                value={reference || ""}
               />
 
               <br />
               <br />
 
-              {/**  Select Session Loacation Address  */}
-              <div className={classes.inputLabel}>Notes</div>
+              <div className={classes.inputLabel}>Shed Store No</div>
+              <TextField
+                className={classes.inputFeild}
+                required
+                type="text"
+                id="shedStoreNo"
+                variant="outlined"
+                onChange={handleShedStoreNoChange}
+                value={shedStoreNo || ""}
+              />
+
+              <br />
+              <br />
+
+              <div className={classes.inputLabel}>Description</div>
+              <TextField
+                className={classes.inputFeild}
+                required
+                type="text"
+                id="description"
+                variant="outlined"
+                onChange={handleDescriptionChange}
+                value={description || ""}
+              />
+
+              <br />
+              <br />
+
+              <div className={classes.inputLabel}>Supervisor Name</div>
+              <TextField
+                className={classes.inputFeild}
+                required
+                type="text"
+                id="supervisorName"
+                variant="outlined"
+                onChange={handleSupervisorNameChange}
+                value={supervisorName || ""}
+              />
+
+              <br />
+              <br />
+
+              <div className={classes.inputLabel}>Handover To</div>
+              <TextField
+                className={classes.inputFeild}
+                required
+                type="text"
+                id="handoverTo"
+                variant="outlined"
+                onChange={handleHandoverToChange}
+                value={handoverTo || ""}
+              />
+
+              <br />
+              <br />
+
+              <div className={classes.inputLabel}>Additional Note</div>
               <TextField
                 className={classes.inputFeild}
                 required
@@ -476,7 +465,7 @@ const AddInventory = ({
               <SubmitButton
                 className={classes.buttonStyle}
                 autoFocus
-                onClick={handleSessionCreateSubmission}
+                onClick={handleInventoryCreateSubmission}
                 color="primary"
                 variant="contained"
                 disabled={loading || !validForm}
@@ -484,16 +473,7 @@ const AddInventory = ({
                 {loading ? "Creating..." : "Create"}
               </SubmitButton>
             ) : (
-              <SubmitButton
-                className={classes.buttonStyle}
-                autoFocus
-                onClick={handleSessionUpdateSubmission}
-                color="primary"
-                variant="contained"
-                disabled={loading || !validForm}
-              >
-                {loading ? "loading..." : "Update"}
-              </SubmitButton>
+             null
             )
           ) : null}
         </DialogActions>
@@ -502,20 +482,16 @@ const AddInventory = ({
   );
 };
 
-function mapStateToProps({ session }) {
-  let { error, confirmation } = session;
-  let unitTypeList = session?.unitTypes?.data;
+function mapStateToProps({ itemInventory }) {
+  let { error, confirmation } = itemInventory;
+
   return {
     error,
-    unitTypeList,
     confirmation,
   };
 }
 
 export default connect(mapStateToProps, {
-  submitFormItemCreate,
-  submitFormItemUpdate,
-  submitFormItemRemove,
-  resetItemCreateForm,
-  fetchCancelledSessions,
+  submitItemInventoryCreate,
+  submitItemInventoryCreateReset,
 })(AddInventory);
