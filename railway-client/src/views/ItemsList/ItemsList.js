@@ -12,7 +12,7 @@ import {
   fetchItems,
 } from 'actions/session';
 import { Redirect } from 'react-router-dom';
-import {Button} from '@material-ui/core';
+import {Button, TextField} from '@material-ui/core';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
@@ -21,6 +21,7 @@ import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import TablePagination from '@material-ui/core/TablePagination';
 import ItemAdd from './ItemAdd';
+import Autocomplete from '@material-ui/lab/Autocomplete';
 
 const useStyles = makeStyles(theme => ({
     root: {
@@ -94,6 +95,14 @@ const useStyles = makeStyles(theme => ({
         display: 'flex',
         alignItems: 'flex-end',
     },
+    searchWrapper: {
+      width: "100%",
+      justifyContent: "center",
+      display: "flex",
+    },
+    inputFeild: {
+      width: "50%",
+    },
 }));
 
 
@@ -124,6 +133,7 @@ const ItemsList = ({
     fetchUnitTypsList,
     fetchItems,
     itemsList,
+    categoryList,
 }) => {
     useEffect(() => {  
         setWindowsDimentions();
@@ -139,6 +149,7 @@ const ItemsList = ({
 
     const classes = useStyles();
     const [select, setSelection] = React.useState(null);
+    const [itemCategory, setItemCategory] = React.useState('');
 
     const handleChangePage = (event, newPage) => {
         setPage(newPage);
@@ -157,6 +168,10 @@ const ItemsList = ({
         setSelection(obj);
     };
 
+    const handleCategoryChange = (event, value) => {
+      setItemCategory(value || "");
+    };
+
     const [page, setPage] = React.useState(0);
     const [rowsPerPage, setRowsPerPage] = React.useState(5);
 
@@ -173,12 +188,6 @@ const ItemsList = ({
     function setWindowsDimentions() {
         window.innerWidth < 600 ? setIsMobile(true) : setIsMobile(false);
     }
-
-   /*  const handleNotifyAbsorbedSessions = () => {
-        notifyAll(notifyAllObj);
-        fetchSessions();
-        handleCloseAlert();
-    } */
 
     const updateItemList = () => {
       fetchItems();
@@ -244,6 +253,24 @@ const ItemsList = ({
               style={{ height: "100%", width: "100%" }}
               className={classes.root}
             >
+              <div className={classes.searchWrapper}>
+              <Autocomplete
+                className={classes.inputFeild}
+                id="unitType"
+                value={itemCategory}
+                options={categoryList}
+                getOptionLabel={(option) => option?.itemCategory || ""}
+                renderInput={(params) => (
+                  <TextField {...params} variant="outlined" />
+                )}
+                onChange={(event, newValue) => {
+                  handleCategoryChange(event, newValue);
+                }}
+              />
+            </div>
+            <br />
+            <br />
+
               {itemsList?.length === 0 ? (
                 <Typography component="h6" variant="h6" align="center">
                   No Data
@@ -261,16 +288,16 @@ const ItemsList = ({
                             ITEM NAME
                           </StyledTableCell>
                           <StyledTableCell width={"10%"}>
-                            DATE
+                            ITEM CATEGORY
                           </StyledTableCell>
                           <StyledTableCell width={"10%"}>
-                            QUANTITY
+                            MINIMUM QUANTITY
                           </StyledTableCell>
                           <StyledTableCell width={"10%"}>
                             UNIT TYPE
                           </StyledTableCell>
                           <StyledTableCell width={"10%"}>
-                            NOTES
+                            DESCRIPTION
                           </StyledTableCell>
                           <StyledTableCell width={"10%"}>
                             ACTION
@@ -292,10 +319,10 @@ const ItemsList = ({
                                 {item?.itemName}
                               </StyledTableCell>
                               <StyledTableCell>
-                                {item?.date}
+                                {""}
                               </StyledTableCell>
                               <StyledTableCell>
-                                {item?.quantity}
+                                {""}
                               </StyledTableCell>
                               <StyledTableCell>
                                 {item?.itemUnits?.unitName}
@@ -329,16 +356,18 @@ const ItemsList = ({
     );
 };
 
-//  mention the reducer
+// mention the reducer
 function mapStateToProps({ session, signin }) {
     // what inside the reducer
     let loginSuccess = sessionStorage.getItem('loginSuccess');
     let {  loading, items } = session;
+    let categoryList = [];
     return {
         loginSuccess,
         loading: loading,
         error: null,
         itemsList: items.data,
+        categoryList,
     };
 }
 

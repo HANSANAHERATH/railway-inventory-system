@@ -238,6 +238,20 @@ const ItemInventoryList = ({
                   handleSearchFieldChange(event, newValue);
                 }}
               />
+
+              <Autocomplete
+                className={classes.inputFeild}
+                id="unitType"
+                value={searchItemName}
+                options={itemList}
+                getOptionLabel={(option) => option?.itemName || ""}
+                renderInput={(params) => (
+                  <TextField {...params} variant="outlined" />
+                )}
+                onChange={(event, newValue) => {
+                  handleSearchFieldChange(event, newValue);
+                }}
+              />
             </div>
             <br />
             <br />
