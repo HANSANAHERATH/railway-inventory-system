@@ -1,3 +1,3 @@
 default:
-	$(MAKE) -C railway-service
-	@ docker build -t railway_system/nginx:latest .
+	#$(MAKE) -C railway-service
+	@ sudo docker build -t railway_system/nginx:latest .
