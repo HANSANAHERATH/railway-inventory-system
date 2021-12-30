@@ -191,6 +191,7 @@ export const RESET_FORM_ITEM_SUCCESS = 'RESET_FORM_ITEM_SUCCESS';
  export const FETCH_ITEMS = 'FETCH_ITEMS';
  export const FETCH_ITEMS_SUCCESS = 'FETCH_ITEMS_SUCCESS';
  export const FETCH_ITEMS_FAILED = 'FETCH_ITEMS_FAILED';
+ export const FETCH_ITEMS_RESET = 'FETCH_ITEMS_RESET';
  
  /**
   * ================== Fetch Items Tasks ============================
@@ -240,3 +241,16 @@ export const DELETE_FORM_ITEM_FAILED = 'DELETE_FORM_ITEM_FAILED';
 * ================== get created Inventory Ends ============================
 */
 
+
+/**
+ * ================== get ItemCategory ============================
+ */
+
+ export const FETCH_CATEGORY = 'FETCH_CATEGORY';
+ export const FETCH_CATEGORY_SUCCESS = 'FETCH_CATEGORY_SUCCESS';
+ export const FETCH_CATEGORY_FAILED = 'FETCH_CATEGORY_FAILED';
+ export const FETCH_CATEGORY_RESET = 'FETCH_CATEGORY_RESET';
+
+/**
+* ================== get get ItemCategory Ends ============================
+*/

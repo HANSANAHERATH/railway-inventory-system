@@ -254,6 +254,7 @@ const ItemAdd = ({
       itemName: itemName,
       notes: notes,
       minQuantity: parseFloat(minQuantity),
+      itemCategory: itemCategory?.id,
       unitId: unitType?.id,
       userId: 0,
     });
@@ -271,6 +272,7 @@ const ItemAdd = ({
       itemName: itemName,
       notes: notes,
       minQuantity: parseFloat(minQuantity),
+      itemCategory: itemCategory?.id,
       unitId: unitType?.id,
       userId: 0,
     });
@@ -280,14 +282,19 @@ const ItemAdd = ({
   /** set data to form when update session */
   const setSelectedDataToForm = (selectedData) => {
     const selectedUnitType = unitTypeList.filter(
-      (res) => res.id === selectedData.itemUnits.id
+      (res) => res.id === selectedData?.itemUnits?.id
     )[0];
 
-    setItemName(selectedData.itemName);
-    setMinQuantity(selectedData.quantity);
+    const selectedItemCategory = categoryList.filter(
+      (res) => res.id === selectedData?.itemCategory?.id
+    )[0];
+
+    setItemName(selectedData?.itemName);
+    setMinQuantity(selectedData?.quantity);
+    setItemCategory(selectedItemCategory);
     setUnitType(selectedUnitType);
-    setNotes(selectedData.notes);
-    setDate(selectedData.date);
+    setNotes(selectedData?.notes);
+    setDate(selectedData?.date);
   };
 
   /** set data to form when update session End*/
@@ -305,6 +312,7 @@ const ItemAdd = ({
     setMinQuantity("");
     setUnitType("");
     setNotes("");
+    setItemCategory("");
     setDate(todayDate);
   };
   /** Reset Form function */
@@ -451,7 +459,7 @@ const ItemAdd = ({
                 id="category"
                 value={itemCategory}
                 options={categoryList}
-                getOptionLabel={(option) => option?.categoryName || ""}
+                getOptionLabel={(option) => option?.itemCategoryName || ""}
                 renderInput={(params) => (
                   <TextField {...params} variant="outlined" />
                 )}
@@ -560,9 +568,9 @@ const ItemAdd = ({
 };
 
 function mapStateToProps({ session }) {
-  let { error, confirmation } = session;
+  let { error, confirmation, itemCategoryList } = session;
   let unitTypeList = session?.unitTypes?.data;
-  let categoryList = [];
+  let categoryList = itemCategoryList?.data;
   return {
     error,
     unitTypeList,

@@ -13,6 +13,11 @@ import {
     DELETE_FORM_ITEM,
     DELETE_FORM_ITEM_SUCCESS,
     DELETE_FORM_ITEM_FAILED,
+    FETCH_CATEGORY,
+    FETCH_CATEGORY_SUCCESS,
+    FETCH_CATEGORY_FAILED,
+    FETCH_CATEGORY_RESET,
+    FETCH_ITEMS_RESET,
 } from '../actions/types';
 
 const initialState = {
@@ -28,7 +33,15 @@ const initialState = {
         error: undefined,
     },
     items: {
-        data: []
+        totalCount: 0,
+        totalPage: 0,
+        pageSize: 0,
+        page:0,
+        content: []
+    },
+    itemCategoryList: {
+        data: [],
+        loading: false,
     }
 };
 
@@ -130,7 +143,11 @@ const sessionReducer = (state = initialState, action) => {
                 loading: false,
                 items: {
                     ...state.items,
-                    data : action.payload.body,
+                    totalCount: action.payload.body.totalCount,
+                    totalPage: action.payload.body.totalPage,
+                    pageSize: action.payload.body.pageSize,
+                    page: action.payload.body.page,
+                    content : action.payload.body.content,
                 }
             };
         case FETCH_ITEMS_FAILED:
@@ -140,9 +157,28 @@ const sessionReducer = (state = initialState, action) => {
                 error: "Fetch items failed.",
                 items: {
                     ...state.items,
-                    data : [],
+                    totalCount: 0,
+                    totalPage: 0,
+                    pageSize: 0,
+                    page:0,
+                    content : [],
                 }
         };
+        case FETCH_ITEMS_RESET:
+            return {
+                ...state,
+                loading: false,
+                error: undefined,
+                items: {
+                    ...state.items,
+                    totalCount: 0,
+                    totalPage: 0,
+                    pageSize: 0,
+                    page:0,
+                    content : [],
+                }
+        };
+
 
         case DELETE_FORM_ITEM:
             return {
@@ -169,6 +205,33 @@ const sessionReducer = (state = initialState, action) => {
                     payload: action.payload,
                 },
             };
+
+        case FETCH_CATEGORY:
+            return {
+                ...state,
+                loading :true,
+            };
+        case FETCH_CATEGORY_SUCCESS:
+            return {
+                ...state,
+                loading: false,
+                itemCategoryList: {
+                    ...state.itemCategoryList,
+                    data : action.payload.body,
+                    loading: false,
+                }
+            };
+        case FETCH_CATEGORY_FAILED:
+            return {
+                ...state,
+                loading: false,
+                error: "Fetch category types failed.",
+                itemCategoryList: {
+                    ...state.itemCategoryList,
+                    data : [],
+                    loading: false,
+                }
+        };
         default:
             return state;
     }

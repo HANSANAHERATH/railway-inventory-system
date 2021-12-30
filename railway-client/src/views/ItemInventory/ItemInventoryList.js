@@ -20,6 +20,7 @@ import {
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import AddInventory from "./AddInventory";
 import { getInventoryList, getLookupValues, getInventoryListReset } from "actions/ItemInventory";
+import { fetchItemCategory, fetchUnitTyps, } from "actions/session";
 import MuiAlert from "@material-ui/lab/Alert";
 //import CircularProgress from '@mui/material/CircularProgress';
 
@@ -99,9 +100,10 @@ const useStyles = makeStyles((theme) => ({
     width: "50%",
   },
   searchWrapper: {
-    width: "100%",
-    justifyContent: "center",
-    display: "flex",
+    width: '100%',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'space-evenly',
   },
   alertWrapper: {
     fontSize: '20px',
@@ -144,6 +146,9 @@ const ItemInventoryList = ({
   getInventoryList,
   balanceDto,
   getInventoryListReset,
+  categoryList,
+  fetchItemCategory,
+  fetchUnitTyps,
 }) => {
   const classes = useStyles();
 
@@ -152,20 +157,33 @@ const ItemInventoryList = ({
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
   const [select, setSelection] = React.useState(null);
   const [item, setItem] = React.useState(null);
+  const [itemCategory, setItemCategory] = React.useState(null);
 
   const handleSearchFieldChange = (event, value) => {
     setSearchItemName(value || "");
     if (value !== null) {
       getInventoryList(value.id);
       setItem(value);
-    }else{
+    } else {
       getInventoryListReset();
     }
   };
 
+  const handleSelectItemCategory = (event, value) => {
+    setItemCategory(value || "");
+    if (value !== null) {
+      getLookupValues(value?.id);
+    } else {
+      setSearchItemName('');
+      getInventoryListReset();
+    }
+  };
+
+
   useEffect(() => {
-    getLookupValues();
-  }, [getLookupValues]);
+    fetchUnitTyps();
+    fetchItemCategory();
+  }, [fetchUnitTyps, fetchItemCategory]);
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
@@ -183,7 +201,7 @@ const ItemInventoryList = ({
 
   const fetchExistingItemsInventory = () => {
     getInventoryList(item?.id);
-    getLookupValues();
+    getLookupValues(itemCategory?.id);
   };
 
   return !loginSuccess ? (
@@ -225,20 +243,23 @@ const ItemInventoryList = ({
             className={classes.root}
           >
             <div className={classes.searchWrapper}>
+              <div>Category</div>
               <Autocomplete
                 className={classes.inputFeild}
-                id="unitType"
-                value={searchItemName}
-                options={itemList}
-                getOptionLabel={(option) => option?.itemName || ""}
+                id="itemCategory"
+                value={itemCategory}
+                options={categoryList}
+                getOptionLabel={(option) => option?.itemCategoryName || ""}
                 renderInput={(params) => (
                   <TextField {...params} variant="outlined" />
                 )}
                 onChange={(event, newValue) => {
-                  handleSearchFieldChange(event, newValue);
+                  handleSelectItemCategory(event, newValue);
                 }}
               />
-
+            </div>
+            <div className={classes.searchWrapper}>
+              <div>Item</div>
               <Autocomplete
                 className={classes.inputFeild}
                 id="unitType"
@@ -352,8 +373,9 @@ const ItemInventoryList = ({
   );
 };
 
-function mapStateToProps({ itemInventory }) {
+function mapStateToProps({ itemInventory, session }) {
   let loginSuccess = sessionStorage.getItem("loginSuccess");
+  let { itemCategoryList } = session;
   return {
     loginSuccess,
     loading: itemInventory.loading,
@@ -361,9 +383,14 @@ function mapStateToProps({ itemInventory }) {
     error: null,
     itemsInventoryList: itemInventory?.inventory?.data,
     balanceDto: itemInventory?.inventory?.balanceDto,
+    categoryList: itemCategoryList?.data,
   };
 }
 
-export default connect(mapStateToProps, { getLookupValues, getInventoryList,getInventoryListReset })(
-  ItemInventoryList
-);
+export default connect(mapStateToProps, {
+  getLookupValues,
+  getInventoryList,
+  getInventoryListReset,
+  fetchItemCategory,
+  fetchUnitTyps,
+})(ItemInventoryList);

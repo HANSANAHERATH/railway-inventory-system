@@ -30,9 +30,14 @@ import {
     FETCH_ITEMS,
     FETCH_ITEMS_SUCCESS,
     FETCH_ITEMS_FAILED,
+    FETCH_ITEMS_RESET,
     DELETE_FORM_ITEM,
     DELETE_FORM_ITEM_SUCCESS,
     DELETE_FORM_ITEM_FAILED,
+    FETCH_CATEGORY,
+    FETCH_CATEGORY_SUCCESS,
+    FETCH_CATEGORY_FAILED,
+    FETCH_CATEGORY_RESET,
 } from './types';
 
 export const fetchDistricts = payload => {
@@ -171,6 +176,10 @@ export const fetchItemsFailed = payload => {
     return { type: FETCH_ITEMS_FAILED, payload };
 };
 
+export const fetchItemsReset = payload => {
+    return { type: FETCH_ITEMS_RESET, payload };
+};
+
 
 // Delete
 export const submitFormItemRemove = payload => {
@@ -183,4 +192,23 @@ export const submitFormItemRemoveSuccess = payload => {
 
 export const submitFormItemRemoveFailed = payload => {
     return { type: DELETE_FORM_ITEM_FAILED, payload };
+};
+
+//fetch item category
+
+// Delete
+export const fetchItemCategory = payload => {
+    return { type: FETCH_CATEGORY, payload };
+};
+
+export const fetchItemCategorySuccess = payload => {
+    return { type: FETCH_CATEGORY_SUCCESS, payload };
+};
+
+export const fetchItemCategoryFailed = payload => {
+    return { type: FETCH_CATEGORY_FAILED, payload };
+};
+
+export const fetchItemCategoryRest = payload => {
+    return { type: FETCH_CATEGORY_RESET, payload };
 };

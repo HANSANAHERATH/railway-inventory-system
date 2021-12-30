@@ -4,7 +4,7 @@ export default {
     items: {
         fetchLookupData: payload =>
             axios.get(
-                `/item-inventory/lookup?itemName=`)
+                `/item-inventory/lookup/${payload}`)
             .then(res => res.data),
         
         createInventory: payload => 

@@ -35,7 +35,7 @@ export default {
                 .then(res => res.data),
         getAll: payload =>
             axios
-                .get('/items',
+                .get(`/items/all/${payload.categoryId}/${payload.pageSize}/${payload.page}`,
                 {
                     ...payload,
                 })
@@ -45,6 +45,12 @@ export default {
         unitTypes: () =>
             axios
                 .get('/items/unitList')
+                .then(res => res.data),
+    },
+    Category: {
+        categoryList: () =>
+            axios
+                .get('/items/itemCategoryList')
                 .then(res => res.data),
     }
 };

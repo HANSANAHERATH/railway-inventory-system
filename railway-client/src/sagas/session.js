@@ -16,6 +16,7 @@ import {
     RESET_FORM_ITEM,
     FETCH_ITEMS,
     DELETE_FORM_ITEM,
+    FETCH_CATEGORY,
 } from '../actions/types';
 import {
     fetchDistrictFailed,
@@ -41,11 +42,13 @@ import {
     fetchItemsFailed,
     submitFormItemRemoveSuccess,
     submitFormItemRemoveFailed,
+    fetchItemCategorySuccess,
+    fetchItemCategoryFailed,
 } from 'actions/session';
 
-function* fetchItems() {
+function* fetchItems({ payload }) {
     try {
-        const data = yield call(sessionApi.Items.getAll);
+        const data = yield call(sessionApi.Items.getAll,payload);
         if(data.status){
             yield put(fetchItemsSuccess(data));
         }else{
@@ -237,6 +240,20 @@ function* updateFormItem({ payload }) {
     }
 }
 
+function* fetchItemCategory({ payload }) {
+    try {
+        let data = yield call(sessionApi.Category.categoryList);
+        if(data.status){
+            yield put(fetchItemCategorySuccess(data));
+        }else{
+            yield put(fetchItemCategoryFailed(data));
+        }
+    } catch (err) {
+        let data = {error_msg: "Error occurred when fetch item categories."}
+        yield put(fetchItemCategoryFailed(data));
+    }
+}
+
 function* watchSessionActions() {
     // takeevery
     yield takeLatest(FETCH_DISTRICT, fetchDistricts);
@@ -251,6 +268,7 @@ function* watchSessionActions() {
     yield takeLatest(UPDATE_FORM_ITEM, updateFormItem);
     yield takeLatest(SUBMIT_FORM_ITEM, submitFormItem);
     yield takeLatest(FETCH_UNIT_TYPE, fetchUnitTypes);
+    yield takeLatest(FETCH_CATEGORY, fetchItemCategory);
 }
 
 export default function* SessionSaga() {

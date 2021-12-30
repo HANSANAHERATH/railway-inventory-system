@@ -12,6 +12,7 @@ import "date-fns";
 import MuiAlert from "@material-ui/lab/Alert";
 import Paper from "@material-ui/core/Paper";
 import Draggable from "react-draggable";
+import Autocomplete from "@material-ui/lab/Autocomplete";
 
 import DialogTitle from "./DialogTitle";
 import { InputAdornment } from "@material-ui/core";
@@ -177,9 +178,10 @@ const AddInventory = ({
   const [description, setDescription] = React.useState("");
   const [supervisorName, setSupervisorName] = React.useState("");
   const [handoverTo, setHandoverTo] = React.useState("");
-
+  const [itemInventoryType, setItemInventoryType] = React.useState("");
+  
   const validForm =
-    itemName !== "" && quantity !== "" && unitType !== "" && notes !== "";
+    itemName !== "" && quantity !== "" && unitType !== "" && notes !== "" && itemInventoryType !== "";
 
   useEffect(() => {
     if (item != null) {
@@ -194,6 +196,10 @@ const AddInventory = ({
     let temp = event.target.value || "";
     setNotes(temp);
   };
+
+  const handleSelectInventoryType = (event, value) => {
+    setItemInventoryType(value || '');
+  }
 
   const handleQuantityChange = (event) => {
     let tmpSessionVaccines = Math.abs(event.target.value);
@@ -313,7 +319,7 @@ const AddInventory = ({
             onClose={handleClose}
           >
             {" "}
-            {!editMode ? "Create Item" : "Update Item"}
+            {!editMode ? "Create Inventory" : "Update Inventory"}
           </DialogTitle>
         </div>
 
@@ -361,6 +367,25 @@ const AddInventory = ({
                 }}
               />
 
+              <br />
+              <br />
+              <div className={classes.inputLabel}>Inventory Type</div>
+              <Autocomplete
+                className={classes.inputFeild}
+                id="itemInventoryType"
+                value={itemInventoryType}
+                options={[{id: 1, name: 'Credited'}, {id: 2, name: 'Debited'}]}
+                getOptionLabel={(option) => option?.name || ""}
+                renderInput={(params) => (
+                  <TextField 
+                    {...params} 
+                    variant="outlined"
+                     />
+                )}
+                onChange={(event, newValue) => {
+                  handleSelectInventoryType(event, newValue);
+                 }}
+              />
               <br />
               <br />
 
