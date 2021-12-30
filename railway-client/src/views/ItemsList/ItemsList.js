@@ -12,7 +12,7 @@ import {
   fetchItems,
   fetchItemCategory,
   fetchItemsReset,
-} from 'actions/session';
+} from 'actions/goods';
 import { Redirect } from 'react-router-dom';
 import { Button, TextField } from '@material-ui/core';
 import Table from '@material-ui/core/Table';
@@ -277,7 +277,7 @@ const ItemsList = ({
                 id="unitType"
                 value={itemCategory}
                 options={categoryList}
-                getOptionLabel={(option) => option?.itemCategoryName || ""}
+                getOptionLabel={(option) => option?.name || ""}
                 renderInput={(params) => (
                   <TextField {...params} variant="outlined" />
                 )}
@@ -303,18 +303,21 @@ const ItemsList = ({
                     <TableHead>
                       <TableRow>
                         <StyledTableCell width={"20%"}>
-                          ITEM NAME
+                          NAME
                         </StyledTableCell>
                         <StyledTableCell width={"20%"}>
                           MINIMUM QUANTITY
                         </StyledTableCell>
                         <StyledTableCell width={"20%"}>
-                          UNIT TYPE
+                          TOTAL QUANTITY
+                        </StyledTableCell>
+                        <StyledTableCell width={"10%"}>
+                          UNIT
                         </StyledTableCell>
                         <StyledTableCell width={"20%"}>
                           DESCRIPTION
                         </StyledTableCell>
-                        <StyledTableCell width={"20%"}>
+                        <StyledTableCell width={"10%"}>
                           ACTION
                         </StyledTableCell>
                       </TableRow>
@@ -323,19 +326,22 @@ const ItemsList = ({
                       {itemsList.map((item, index) => (
                         <StyledTableRow
                           key={item.id}
-                           className={item?.minQuantity < item?.quantity ? classes.notHighlightRow : classes.highlightRow}
+                           className={item?.minQuantity < item?.totalQuantity ? classes.notHighlightRow : classes.highlightRow}
                         >
                           <StyledTableCell component="th" scope="row">
-                            {item?.itemName}
+                            {item?.name}
                           </StyledTableCell>
                           <StyledTableCell>
                             {item?.minQuantity}
                           </StyledTableCell>
                           <StyledTableCell>
-                            {item?.itemUnits?.unitName}
+                            {item?.totalQuantity}
                           </StyledTableCell>
                           <StyledTableCell>
-                            {item?.notes}
+                            {item?.units?.name}
+                          </StyledTableCell>
+                          <StyledTableCell>
+                            {item?.description}
                           </StyledTableCell>
                           <StyledTableCell>
                             <Button onClick={() => { handleItemSelection(item, Math.random()) }}>Edit</Button>
@@ -364,10 +370,10 @@ const ItemsList = ({
 };
 
 // mention the reducer
-function mapStateToProps({ session, signin }) {
+function mapStateToProps({ goods, signin }) {
   // what inside the reducer
   let loginSuccess = sessionStorage.getItem('loginSuccess');
-  let { loading, items, itemCategoryList } = session;
+  let { loading, items, itemCategoryList } = goods;
   let categoryList = itemCategoryList?.data;
   return {
     loginSuccess,

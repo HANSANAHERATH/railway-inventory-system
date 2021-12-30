@@ -14,6 +14,10 @@ import com.railway.railwayservice.enums.InventoryType;
 import com.railway.railwayservice.repository.ItemInventoryRepository;
 import com.railway.railwayservice.repository.ItemRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -86,7 +90,7 @@ public class ItemInventoryServiceImpl implements ItemInventory {
     }
 
     @Override
-    public ResponseWrapperDto getAllInventory(Long id, InventoryFilter inventoryFilter) throws RuntimeExceptionHere {
+    public ResponseWrapperDto getAllInventory(Long id, InventoryFilter inventoryFilter, int page, int size) throws RuntimeExceptionHere {
         List<String> inventoryTypes = new ArrayList<>();
         if(inventoryFilter.equals(InventoryFilter.ALL)){
             inventoryTypes.add(InventoryType.GOODS_IN.toString());
@@ -97,9 +101,19 @@ public class ItemInventoryServiceImpl implements ItemInventory {
             else
                 inventoryTypes.add(InventoryType.GOODS_OUT.toString());
         }
-
-        List<InventoryResponseDto> list = itemInventoryRepository.findAllByInventory(id, false, inventoryTypes);
-        ResponseWrapperDto responseWrapperDto = new ResponseWrapperDto(true, "Fetch Success.", list);
+        Pageable paging = PageRequest.of(page, size);
+        Page<InventoryResponseDto> result = itemInventoryRepository.findAllByInventory(id, false,inventoryTypes, paging);
+        InventoryPaginationDto inventoryPaginationDto = new InventoryPaginationDto(
+                result.getTotalElements(),
+                result.getTotalPages(),
+                size,
+                page,
+                new ArrayList<InventoryEntity>());
+        if(result.hasContent()) {
+            inventoryPaginationDto.setContent(result.getContent());
+        }
+       // List<InventoryResponseDto> list = itemInventoryRepository.findAllByInventory(id, false, inventoryTypes);
+        ResponseWrapperDto responseWrapperDto = new ResponseWrapperDto(true, "Fetch Success.", inventoryPaginationDto);
         return responseWrapperDto;
     }
     

@@ -185,8 +185,9 @@ const AddInventory = ({
 
   useEffect(() => {
     if (item != null) {
-      setItemName(item.itemName);
-      setUnitType(item?.itemUnits?.unitName);
+      console.log(item)
+      setItemName(item.name);
+      setUnitType(item?.unit?.name);
     }
   }, [item,random]);
 
@@ -243,7 +244,7 @@ const AddInventory = ({
       supervisorName: supervisorName,
       handoverTo: handoverTo,
       itemsEntityId: item?.id,
-
+      inventoryType : '',
     });
   };
   /** Submit form for create a session End*/

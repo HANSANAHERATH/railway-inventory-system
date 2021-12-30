@@ -18,7 +18,7 @@ export default {
         
         fetchInvenoryList: payload =>
             axios.get(
-                `/item-inventory/getAll/${payload}`)
+                `/item-inventory/getAll/${payload?.item}/${payload?.inventoryType}/${payload?.pageSize}/${payload?.pageNo}`)
             .then(res => res.data),
     },
 };

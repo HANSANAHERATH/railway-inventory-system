@@ -24,7 +24,7 @@ import {
   submitFormItemCreate,
   submitFormItemUpdate,
   submitFormItemRemove,
-} from "actions/session";
+} from "actions/goods";
 import IconButton from "@material-ui/core/IconButton";
 import CloseIcon from "@material-ui/icons/Close";
 import moment from "moment";
@@ -241,9 +241,6 @@ const ItemAdd = ({
     setItemCategory(value || "");
   };
 
-  /** Change state when change input End */
-
-  /** Submit form for create a session */
   const handleSessionCreateSubmission = () => {
     setLoading(true);
     submitFormItemCreate({
@@ -251,17 +248,15 @@ const ItemAdd = ({
       date: moment(date)
         .format(moment.HTML5_FMT.DATE)
         .toString(),
-      itemName: itemName,
-      notes: notes,
+      goodName: itemName,
+      description: notes,
       minQuantity: parseFloat(minQuantity),
-      itemCategory: itemCategory?.id,
+      category: itemCategory?.id,
       unitId: unitType?.id,
       userId: 0,
     });
   };
-  /** Submit form for create a session End*/
 
-  /** submit for update a session  */
   const handleSessionUpdateSubmission = () => {
     setLoading(true);
     submitFormItemUpdate({
@@ -269,37 +264,32 @@ const ItemAdd = ({
       date: moment(date)
         .format(moment.HTML5_FMT.DATE)
         .toString(),
-      itemName: itemName,
-      notes: notes,
+      goodName: itemName,
+      description: notes,
       minQuantity: parseFloat(minQuantity),
-      itemCategory: itemCategory?.id,
+      category: itemCategory?.id,
       unitId: unitType?.id,
       userId: 0,
     });
   };
-  /** submit for update a session END */
 
-  /** set data to form when update session */
   const setSelectedDataToForm = (selectedData) => {
     const selectedUnitType = unitTypeList.filter(
-      (res) => res.id === selectedData?.itemUnits?.id
+      (res) => res.id === selectedData?.units?.id
     )[0];
 
     const selectedItemCategory = categoryList.filter(
-      (res) => res.id === selectedData?.itemCategory?.id
+      (res) => res.id === selectedData?.category?.id
     )[0];
 
-    setItemName(selectedData?.itemName);
-    setMinQuantity(selectedData?.quantity);
+    setItemName(selectedData?.name);
+    setMinQuantity(selectedData?.minQuantity);
     setItemCategory(selectedItemCategory);
     setUnitType(selectedUnitType);
-    setNotes(selectedData?.notes);
+    setNotes(selectedData?.description);
     setDate(selectedData?.date);
   };
 
-  /** set data to form when update session End*/
-
-  /** Reset Form function */
   const handleSessionFormReset = (event) => {
     resetItemCreateForm({});
     handleResetSessionObj();
@@ -315,9 +305,7 @@ const ItemAdd = ({
     setItemCategory("");
     setDate(todayDate);
   };
-  /** Reset Form function */
 
-  /** open/close Delete confirmation alert */
   const handleOpenAlert = () => {
     setOpenAlert(true);
   };
@@ -325,9 +313,7 @@ const ItemAdd = ({
   const handleCloseAlert = () => {
     setOpenAlert(false);
   };
-  /** open/close Delete confirmation alert End*/
-
-  /** Delete a session */
+  
   const handleRemoveSession = () => {
     setOpenAlert(false);
     setLoading(true);
@@ -335,7 +321,6 @@ const ItemAdd = ({
       id: selectedDataRow.id,
     });
   };
-  /** Delete a session End*/
 
   const sessionCreated =
     confirmation.payload?.statusMessage === "Saved Successful";
@@ -370,7 +355,6 @@ const ItemAdd = ({
         </div>
       </Dialog>
 
-      {/** Create Session Button */}
       <Button
         className={classes.createSession}
         onClick={handleClickOpen}
@@ -459,7 +443,7 @@ const ItemAdd = ({
                 id="category"
                 value={itemCategory}
                 options={categoryList}
-                getOptionLabel={(option) => option?.itemCategoryName || ""}
+                getOptionLabel={(option) => option?.name || ""}
                 renderInput={(params) => (
                   <TextField {...params} variant="outlined" />
                 )}
@@ -477,7 +461,7 @@ const ItemAdd = ({
                 id="unitType"
                 value={unitType}
                 options={unitTypeList}
-                getOptionLabel={(option) => option?.unitName || ""}
+                getOptionLabel={(option) => option?.name || ""}
                 renderInput={(params) => (
                   <TextField {...params} variant="outlined" />
                 )}
@@ -500,7 +484,7 @@ const ItemAdd = ({
                 value={minQuantity || ""}
                 InputProps={{
                   startAdornment: (
-                    <InputAdornment position="start">{unitType?.unitName}</InputAdornment>
+                    <InputAdornment position="start">{unitType?.name}</InputAdornment>
                   ),
                   inputProps: { min: 0, max: 100000 },
                 }}
@@ -567,9 +551,9 @@ const ItemAdd = ({
   );
 };
 
-function mapStateToProps({ session }) {
-  let { error, confirmation, itemCategoryList } = session;
-  let unitTypeList = session?.unitTypes?.data;
+function mapStateToProps({ goods }) {
+  let { error, confirmation, itemCategoryList } = goods;
+  let unitTypeList = goods?.unitTypes?.data;
   let categoryList = itemCategoryList?.data;
   return {
     error,

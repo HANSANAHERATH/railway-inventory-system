@@ -11,5 +11,5 @@ public interface ItemInventory {
 
     ResponseWrapperDto createInventory(CreateInventoryDto createInventoryDto) throws Exception;
 
-    ResponseWrapperDto getAllInventory(Long id, InventoryFilter inventoryFilter) throws Exception;
+    ResponseWrapperDto getAllInventory(Long id, InventoryFilter inventoryFilter,  int page, int size) throws Exception;
 }

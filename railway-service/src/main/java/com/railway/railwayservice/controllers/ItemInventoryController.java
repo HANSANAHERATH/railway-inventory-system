@@ -27,9 +27,9 @@ public class ItemInventoryController {
         return ResponseEntity.ok(responseWrapperDto);
     }
 
-    @GetMapping("/getAll/{id}/{filter}")
-    public ResponseEntity<ResponseWrapperDto> getAllInventory(@PathVariable("id") Long id, @PathVariable("filter") InventoryFilter inventoryFilter) throws Exception {
-        ResponseWrapperDto responseWrapperDto = itemInventory.getAllInventory(id, inventoryFilter);
+    @GetMapping("/getAll/{id}/{filter}/{size}/{page}")
+    public ResponseEntity<ResponseWrapperDto> getAllInventory(@PathVariable("id") Long id, @PathVariable("filter") InventoryFilter inventoryFilter, @PathVariable("size") int size, @PathVariable("page") int page) throws Exception {
+        ResponseWrapperDto responseWrapperDto = itemInventory.getAllInventory(id, inventoryFilter, page, size);
         return ResponseEntity.ok(responseWrapperDto);
     }
 

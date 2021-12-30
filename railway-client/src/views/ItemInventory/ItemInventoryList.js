@@ -8,6 +8,10 @@ import ErrorDisplay from "views/Common/ErrorDisplay";
 import Spinner from "views/Common/Spinner";
 import { Redirect } from "react-router-dom";
 import {
+  FormControlLabel,
+  FormLabel,
+  Radio,
+  RadioGroup,
   Table,
   TableBody,
   TableCell,
@@ -20,7 +24,7 @@ import {
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import AddInventory from "./AddInventory";
 import { getInventoryList, getLookupValues, getInventoryListReset } from "actions/ItemInventory";
-import { fetchItemCategory, fetchUnitTyps, } from "actions/session";
+import { fetchItemCategory, fetchUnitTyps, } from "actions/goods";
 import MuiAlert from "@material-ui/lab/Alert";
 //import CircularProgress from '@mui/material/CircularProgress';
 
@@ -144,11 +148,12 @@ const ItemInventoryList = ({
   getLookupValues,
   itemList,
   getInventoryList,
-  balanceDto,
   getInventoryListReset,
   categoryList,
   fetchItemCategory,
   fetchUnitTyps,
+  unitList,
+  totalCount,
 }) => {
   const classes = useStyles();
 
@@ -158,11 +163,11 @@ const ItemInventoryList = ({
   const [select, setSelection] = React.useState(null);
   const [item, setItem] = React.useState(null);
   const [itemCategory, setItemCategory] = React.useState(null);
+  const [inventoryType, setInventoryType] = React.useState(null);
 
   const handleSearchFieldChange = (event, value) => {
     setSearchItemName(value || "");
     if (value !== null) {
-      getInventoryList(value.id);
       setItem(value);
     } else {
       getInventoryListReset();
@@ -179,7 +184,6 @@ const ItemInventoryList = ({
     }
   };
 
-
   useEffect(() => {
     fetchUnitTyps();
     fetchItemCategory();
@@ -187,11 +191,27 @@ const ItemInventoryList = ({
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
+    if (itemCategory !== null && searchItemName !== "" && inventoryType !== null) {
+      getInventoryList({
+        item: item?.id,
+        inventoryType: inventoryType,
+        pageSize: rowsPerPage,
+        pageNo: newPage,
+      });
+    }
   };
 
-  const handleChangeRowsPerPage = (event) => {
+  const handleChangeRowsPerPage = event => {
     setRowsPerPage(parseInt(event.target.value, 10));
     setPage(0);
+    if (itemCategory !== null && searchItemName !== "" && inventoryType !== null) {
+      getInventoryList({
+        item: item?.id,
+        inventoryType: inventoryType,
+        pageSize: parseInt(event.target.value, 10),
+        pageNo: page,
+      });
+    }
   };
 
   const updateItemList = () => {
@@ -200,9 +220,28 @@ const ItemInventoryList = ({
   };
 
   const fetchExistingItemsInventory = () => {
-    getInventoryList(item?.id);
+    // getInventoryList({
+    //   item: item?.id,
+    //   inventoryType: "ALL",
+    //   pageSize: 10,
+    //   pageNo: 0,
+    // });
     getLookupValues(itemCategory?.id);
   };
+
+  const handleChangeInventoryType = (event) => {
+    setInventoryType(event.target.value);
+    getInventoryList({
+      item: item?.id,
+      inventoryType: event.target.value,
+      pageSize: 10,
+      pageNo: 0,
+    });
+  }
+
+  const getUnitName = (inventoryItem) => {
+    return unitList.filter(res => res.id === inventoryItem?.unit)[0]?.name
+  }
 
   return !loginSuccess ? (
     <Redirect to="/sign-in" />
@@ -249,7 +288,7 @@ const ItemInventoryList = ({
                 id="itemCategory"
                 value={itemCategory}
                 options={categoryList}
-                getOptionLabel={(option) => option?.itemCategoryName || ""}
+                getOptionLabel={(option) => option?.name || ""}
                 renderInput={(params) => (
                   <TextField {...params} variant="outlined" />
                 )}
@@ -258,6 +297,7 @@ const ItemInventoryList = ({
                 }}
               />
             </div>
+            <br />
             <div className={classes.searchWrapper}>
               <div>Item</div>
               <Autocomplete
@@ -265,7 +305,7 @@ const ItemInventoryList = ({
                 id="unitType"
                 value={searchItemName}
                 options={itemList}
-                getOptionLabel={(option) => option?.itemName || ""}
+                getOptionLabel={(option) => option?.name || ""}
                 renderInput={(params) => (
                   <TextField {...params} variant="outlined" />
                 )}
@@ -275,19 +315,33 @@ const ItemInventoryList = ({
               />
             </div>
             <br />
+            <div className={classes.searchWrapper}>
+              <div></div>
+              <RadioGroup
+                aria-label="inventoryType"
+                name="radio-buttons-group"
+                row
+                value={inventoryType}
+                onChange={handleChangeInventoryType}
+
+              >
+                <FormControlLabel value="ALL" control={<Radio />} label="Goods In/Out" disabled={searchItemName === ""} />
+                <FormControlLabel value="IN" control={<Radio />} label="Goods In" disabled={searchItemName === ""} />
+                <FormControlLabel value="OUT" control={<Radio />} label="Goods Out" disabled={searchItemName === ""} />
+              </RadioGroup>
+            </div>
             <br />
             {searchItemName !== "" ? (
               <div>
                 <Alert severity="info" className={classes.alertWrapper}>
-                  <div>Total Quantity: {balanceDto?.totalQuantity} {item.itemUnits.unitName}</div>
-                  <div>Balance: {balanceDto?.balance} {item.itemUnits.unitName}</div>
+                  {itemsInventoryList.length > 0 ? <div>Remain Quantity: {itemsInventoryList[0]?.totalQuantity} {unitList.filter(res => res.id === itemsInventoryList[0]?.unit)[0]?.name}</div> : <div>No Data</div>}
                 </Alert>
                 <br />
                 <br />
               </div>
             ) : null}
 
-            {itemsInventoryList?.length === 0 ? (
+            {totalCount === 0 ? (
               <Typography component="h6" variant="h6" align="center">
                 No Data
               </Typography>
@@ -300,17 +354,17 @@ const ItemInventoryList = ({
                   >
                     <TableHead>
                       <TableRow>
-                        <StyledTableCell width={"10%"}>DATE</StyledTableCell>
+                        <StyledTableCell width={"20%"}>DATE</StyledTableCell>
                         <StyledTableCell width={"10%"}>
-                          QUANTITY ({searchItemName?.itemUnits?.unitName})
+                          QUANTITY ({getUnitName(itemsInventoryList[0])})
                         </StyledTableCell>
                         <StyledTableCell width={"10%"}>
-                          REFERENCE
+                          GOODS IN/OUT
                         </StyledTableCell>
-                        <StyledTableCell width={"10%"}>
+                        <StyledTableCell width={"20%"}>
                           SHED STORE NO
                         </StyledTableCell>
-                        <StyledTableCell width={"10%"}>
+                        <StyledTableCell width={"20%"}>
                           DESCRIPTION
                         </StyledTableCell>
                         <StyledTableCell width={"10%"}>
@@ -319,46 +373,35 @@ const ItemInventoryList = ({
                         <StyledTableCell width={"10%"}>
                           HANDOVER TO
                         </StyledTableCell>
-                        <StyledTableCell width={"10%"}>
-                          ADDITIONAL NOTES
-                        </StyledTableCell>
                       </TableRow>
                     </TableHead>
                     <TableBody>
-                      {itemsInventoryList
-                        ?.slice(
-                          page * rowsPerPage,
-                          page * rowsPerPage + rowsPerPage
-                        )
-                        .map((item, index) => (
-                          <StyledTableRow key={item.id}>
-                            <StyledTableCell>{item?.date}</StyledTableCell>
-                            <StyledTableCell>{item?.quantity}</StyledTableCell>
-                            <StyledTableCell>{item?.reference}</StyledTableCell>
-                            <StyledTableCell>
-                              {item?.shedStoreNo}
-                            </StyledTableCell>
-                            <StyledTableCell>
-                              {item?.description}
-                            </StyledTableCell>
-                            <StyledTableCell>
-                              {item?.supervisorName}
-                            </StyledTableCell>
-                            <StyledTableCell>
-                              {item?.handoverTo}
-                            </StyledTableCell>
-                            <StyledTableCell>
-                              {item?.additionalNote}
-                            </StyledTableCell>
-                          </StyledTableRow>
-                        ))}
+                      {itemsInventoryList.map((item, index) => (
+                        <StyledTableRow key={item.id}>
+                          <StyledTableCell>{item?.date}</StyledTableCell>
+                          <StyledTableCell>{item?.quantity}</StyledTableCell>
+                          <StyledTableCell>{item?.inventoryType.split("_")[1]}</StyledTableCell>
+                          <StyledTableCell>
+                            {item?.shedStoreNo}
+                          </StyledTableCell>
+                          <StyledTableCell>
+                            {item?.description}
+                          </StyledTableCell>
+                          <StyledTableCell>
+                            {item?.supervisorName}
+                          </StyledTableCell>
+                          <StyledTableCell>
+                            {item?.handoverTo}
+                          </StyledTableCell>
+                        </StyledTableRow>
+                      ))}
                     </TableBody>
                   </Table>
                 </TableContainer>
                 <TablePagination
                   rowsPerPageOptions={[5, 10, 50]}
                   component="div"
-                  count={itemsInventoryList?.length}
+                  count={totalCount}
                   rowsPerPage={rowsPerPage}
                   page={page}
                   onChangePage={handleChangePage}
@@ -373,17 +416,18 @@ const ItemInventoryList = ({
   );
 };
 
-function mapStateToProps({ itemInventory, session }) {
+function mapStateToProps({ itemInventory, goods }) {
   let loginSuccess = sessionStorage.getItem("loginSuccess");
-  let { itemCategoryList } = session;
+  let { itemCategoryList, unitTypes } = goods;
   return {
     loginSuccess,
     loading: itemInventory.loading,
-    itemList: itemInventory.lookups.data,
+    itemList: itemInventory?.nameLookups?.data,
     error: null,
-    itemsInventoryList: itemInventory?.inventory?.data,
-    balanceDto: itemInventory?.inventory?.balanceDto,
+    itemsInventoryList: itemInventory?.inventory?.content,
     categoryList: itemCategoryList?.data,
+    unitList: unitTypes?.data,
+    totalCount : itemInventory?.inventory?.totalCount
   };
 }
 
