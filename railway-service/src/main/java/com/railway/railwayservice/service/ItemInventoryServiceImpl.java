@@ -3,10 +3,14 @@ package com.railway.railwayservice.service;
 import com.railway.railwayservice.Exceptions.ItemCountDecrementException;
 import com.railway.railwayservice.Exceptions.ItemNotFoundException;
 import com.railway.railwayservice.Exceptions.ItemQuantityException;
+import com.railway.railwayservice.Exceptions.RuntimeExceptionHere;
 import com.railway.railwayservice.dtos.*;
 import com.railway.railwayservice.dtos.common.ResponseWrapperDto;
-import com.railway.railwayservice.entity.ItemUnits;
-import com.railway.railwayservice.entity.ItemsEntity;
+import com.railway.railwayservice.entity.CategoryEntity;
+import com.railway.railwayservice.entity.GoodsEntity;
+import com.railway.railwayservice.entity.InventoryEntity;
+import com.railway.railwayservice.enums.InventoryFilter;
+import com.railway.railwayservice.enums.InventoryType;
 import com.railway.railwayservice.repository.ItemInventoryRepository;
 import com.railway.railwayservice.repository.ItemRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,121 +39,78 @@ public class ItemInventoryServiceImpl implements ItemInventory {
     }
 
     @Override
-    public ResponseWrapperDto getItemLookup(String itemName) throws Exception {
-        List<ItemsEntity> itemsEntities = new ArrayList<>();
-        if(itemName == null ){
-            itemsEntities = itemRepository.findAllByIsDeleted(false);
-        }else {
-            itemsEntities = itemRepository.findByItemNameIsContainingAndIsDeleted(itemName, false);
-        }
-        List<LookupResponseDto> lookupResponseDtos = new ArrayList<>();
-
-        itemsEntities.stream().forEach(i -> {
-            LookupResponseDto lookupResponseDto = new LookupResponseDto();
-            lookupResponseDto.setId(i.getId());
-            lookupResponseDto.setItemName(i.getItemName());
-            lookupResponseDto.setItemUnits(i.getItemUnits());
-            lookupResponseDto.setBalance(i.getBalance());
-            lookupResponseDtos.add(lookupResponseDto);
-        });
-        ResponseWrapperDto responseWrapperDto = new ResponseWrapperDto(true, "Fetch Success.", lookupResponseDtos);
+    public ResponseWrapperDto getItemLookup(long category) throws RuntimeExceptionHere {
+        CategoryEntity itemCategory = new CategoryEntity();
+        itemCategory.setId(category);
+        List<GoodNameLookupResponseDto> goodNameLookupResponseDtos = itemRepository.findGoodsList(itemCategory, false);
+        ResponseWrapperDto responseWrapperDto = new ResponseWrapperDto(true, "Fetch Success.", goodNameLookupResponseDtos);
         return responseWrapperDto;
     }
 
     @Override
+    @Transactional
     public ResponseWrapperDto createInventory(CreateInventoryDto createInventoryDto) throws ItemNotFoundException, ItemCountDecrementException, ItemQuantityException {
-
-        Optional<ItemsEntity> existingItemEntity = itemRepository.findById(createInventoryDto.getItemsEntityId());
-        if (!existingItemEntity.isPresent()) {
+        Optional<GoodsEntity> existingGoodsEntity = itemRepository.findById(createInventoryDto.getGoodsId());
+        if (!existingGoodsEntity.isPresent()) {
             throw new ItemNotFoundException();
         }
 
-        if (existingItemEntity.get().getBalance() < createInventoryDto.getQuantity()) {
-            throw new ItemQuantityException();
+        InventoryEntity inventoryEntity = new InventoryEntity();
+
+        if(createInventoryDto.getInventoryType().equals(InventoryType.GOODS_IN)){
+            inventoryEntity.setInventoryType(InventoryType.GOODS_IN);
+            float total = existingGoodsEntity.get().getTotalQuantity() + createInventoryDto.getQuantity();
+            existingGoodsEntity.get().setTotalQuantity(total);
+        }else {
+            inventoryEntity.setInventoryType(InventoryType.GOODS_OUT);
+            if (existingGoodsEntity.get().getTotalQuantity() < createInventoryDto.getQuantity()) {
+                throw new ItemQuantityException();
+            }
+            float total = existingGoodsEntity.get().getTotalQuantity() - createInventoryDto.getQuantity();
+            existingGoodsEntity.get().setTotalQuantity(total);
         }
 
-        com.railway.railwayservice.entity.ItemInventory itemInventory = new com.railway.railwayservice.entity.ItemInventory();
-
-        itemInventory.setId(null);
-        itemInventory.setDate(LocalDate.now());
-        itemInventory.setTime(LocalTime.now());
-        itemInventory.setAdditionalNote(createInventoryDto.getAdditionalNote());
-        itemInventory.setDescription(createInventoryDto.getDescription());
-        itemInventory.setHandoverTo(createInventoryDto.getHandoverTo());
-        itemInventory.setQuantity(createInventoryDto.getQuantity());
-        itemInventory.setReference(createInventoryDto.getReference());
-        itemInventory.setShedStoreNo(createInventoryDto.getShedStoreNo());
-        itemInventory.setSupervisorName(createInventoryDto.getSupervisorName());
-
-        ItemUnits itemUnits = new ItemUnits();
-        itemUnits.setId(createInventoryDto.getUnitId());
-        // itemInventory.setItemUnits(itemUnits);
-
-        ItemsEntity itemsEntity = new ItemsEntity();
-        itemsEntity.setId(createInventoryDto.getItemsEntityId());
-        // itemsEntity.addItemInventory(itemInventory);
-        existingItemEntity.get().setBalance(existingItemEntity.get().getBalance() - createInventoryDto.getQuantity());
-        itemInventory.setItemsEntity(existingItemEntity.get());
-
-        com.railway.railwayservice.entity.ItemInventory savedEntity = itemInventoryRepository.saveAndFlush(itemInventory);
-
-        GetAllInventoryResponseDto getAllInventoryResponseDto = new GetAllInventoryResponseDto();
-        getAllInventoryResponseDto.setDescription(savedEntity.getDescription());
-        getAllInventoryResponseDto.setDate(savedEntity.getDate().toString());
-        getAllInventoryResponseDto.setAdditionalNote(savedEntity.getAdditionalNote());
-        getAllInventoryResponseDto.setQuantity(savedEntity.getQuantity());
-        getAllInventoryResponseDto.setReference(savedEntity.getReference());
-        getAllInventoryResponseDto.setHandoverTo(savedEntity.getHandoverTo());
-        getAllInventoryResponseDto.setId(savedEntity.getId());
-        getAllInventoryResponseDto.setTime(savedEntity.getTime().toString());
-        getAllInventoryResponseDto.setSupervisorName(savedEntity.getSupervisorName());
-        getAllInventoryResponseDto.setShedStoreNo(savedEntity.getShedStoreNo());
-
-        ResponseWrapperDto responseWrapperDto = new ResponseWrapperDto(true, "Create Success.", getAllInventoryResponseDto);
+        inventoryEntity.setId(null);
+        inventoryEntity.setDate(LocalDate.now());
+        inventoryEntity.setTime(LocalTime.now());
+        inventoryEntity.setDescription(createInventoryDto.getDescription());
+        inventoryEntity.setHandoverTo(createInventoryDto.getHandoverTo());
+        inventoryEntity.setQuantity(createInventoryDto.getQuantity());
+        inventoryEntity.setShedStoreNo(createInventoryDto.getShedStoreNo());
+        inventoryEntity.setSupervisorName(createInventoryDto.getSupervisorName());
+        inventoryEntity.setUnitsEntity(existingGoodsEntity.get().getUnitsEntity());
+        inventoryEntity.setGoodsEntity(existingGoodsEntity.get());
+        InventoryEntity savedEntity = itemInventoryRepository.saveAndFlush(inventoryEntity);
+        ResponseWrapperDto responseWrapperDto = new ResponseWrapperDto(true, "Create Success.", null);
         return responseWrapperDto;
     }
 
     @Override
-    public ResponseWrapperDto getAllInventory(Long id) throws Exception {
-        ItemsEntity itemsEntity = new ItemsEntity();
-        itemsEntity.setId(id);
-        List<com.railway.railwayservice.entity.ItemInventory> list = itemInventoryRepository.findAllByItemsEntity(itemsEntity);
-
-        List<GetAllInventoryResponseDto> resDtoList = new ArrayList<>();
-
-        for (com.railway.railwayservice.entity.ItemInventory itemInventory : list) {
-            GetAllInventoryResponseDto getAllInventoryResponseDto = new GetAllInventoryResponseDto();
-            getAllInventoryResponseDto.setDescription(itemInventory.getDescription());
-            getAllInventoryResponseDto.setDate(itemInventory.getDate().toString());
-            getAllInventoryResponseDto.setAdditionalNote(itemInventory.getAdditionalNote());
-            getAllInventoryResponseDto.setQuantity(itemInventory.getQuantity());
-            getAllInventoryResponseDto.setReference(itemInventory.getReference());
-            getAllInventoryResponseDto.setHandoverTo(itemInventory.getHandoverTo());
-            getAllInventoryResponseDto.setId(itemInventory.getId());
-            getAllInventoryResponseDto.setTime(itemInventory.getTime().toString());
-            getAllInventoryResponseDto.setSupervisorName(itemInventory.getSupervisorName());
-            getAllInventoryResponseDto.setShedStoreNo(itemInventory.getShedStoreNo());
-            //getAllInventoryResponseDto.setUnitId(itemInventory.getItemUnits().getId());
-            resDtoList.add(getAllInventoryResponseDto);
+    public ResponseWrapperDto getAllInventory(Long id, InventoryFilter inventoryFilter) throws RuntimeExceptionHere {
+        List<String> inventoryTypes = new ArrayList<>();
+        if(inventoryFilter.equals(InventoryFilter.ALL)){
+            inventoryTypes.add(InventoryType.GOODS_IN.toString());
+            inventoryTypes.add(InventoryType.GOODS_OUT.toString());
+        }else {
+            if (inventoryFilter.equals(InventoryFilter.IN))
+                inventoryTypes.add(InventoryType.GOODS_IN.toString());
+            else
+                inventoryTypes.add(InventoryType.GOODS_OUT.toString());
         }
 
-        InvenoryResponseDto invenoryResponseDto = new InvenoryResponseDto();
-        BalanceDto balanceDto = getBalance(id);
-        invenoryResponseDto.setGetAllInventoryResponseDtos(resDtoList);
-        invenoryResponseDto.setBalanceDto(balanceDto);
-
-        ResponseWrapperDto responseWrapperDto = new ResponseWrapperDto(true, "Fetch Success.", invenoryResponseDto);
+        List<InventoryResponseDto> list = itemInventoryRepository.findAllByInventory(id, false, inventoryTypes);
+        ResponseWrapperDto responseWrapperDto = new ResponseWrapperDto(true, "Fetch Success.", list);
         return responseWrapperDto;
     }
     
     private BalanceDto getBalance(Long id) throws ItemQuantityException{
-        Optional<ItemsEntity> entity = itemRepository.findByIdAndIsDeleted(id, false);
+       /* Optional<ItemsEntity> entity = itemRepository.findByIdAndIsDeleted(id, false);
         if(!entity.isPresent()){
             throw new ItemNotFoundException();
         }
         BalanceDto balanceDto = new BalanceDto();
         balanceDto.setBalance(Float.toString(entity.get().getBalance()));
-        balanceDto.setTotalQuantity(Float.toString(entity.get().getQuantity()));
-        return balanceDto;
+        balanceDto.setTotalQuantity(Float.toString(entity.get().getQuantity()));*/
+        return null;
     }
 }

@@ -2,6 +2,7 @@ package com.railway.railwayservice.controllers;
 
 import com.railway.railwayservice.dtos.CreateInventoryDto;
 import com.railway.railwayservice.dtos.common.ResponseWrapperDto;
+import com.railway.railwayservice.enums.InventoryFilter;
 import com.railway.railwayservice.service.ItemInventory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -14,9 +15,9 @@ public class ItemInventoryController {
     @Autowired
     private ItemInventory itemInventory;
 
-    @GetMapping("/lookup")
-    public ResponseEntity<ResponseWrapperDto> getItemLookup(@RequestParam String itemName) throws Exception {
-        ResponseWrapperDto responseWrapperDto = itemInventory.getItemLookup(itemName);
+    @GetMapping("/lookup/{category}")
+    public ResponseEntity<ResponseWrapperDto> getItemLookup(@PathVariable("category") long category) throws Exception {
+        ResponseWrapperDto responseWrapperDto = itemInventory.getItemLookup(category);
         return ResponseEntity.ok(responseWrapperDto);
     }
 
@@ -26,9 +27,9 @@ public class ItemInventoryController {
         return ResponseEntity.ok(responseWrapperDto);
     }
 
-    @GetMapping("/getAll/{id}")
-    public ResponseEntity<ResponseWrapperDto> getAllInventory(@PathVariable("id") Long id) throws Exception {
-        ResponseWrapperDto responseWrapperDto = itemInventory.getAllInventory(id);
+    @GetMapping("/getAll/{id}/{filter}")
+    public ResponseEntity<ResponseWrapperDto> getAllInventory(@PathVariable("id") Long id, @PathVariable("filter") InventoryFilter inventoryFilter) throws Exception {
+        ResponseWrapperDto responseWrapperDto = itemInventory.getAllInventory(id, inventoryFilter);
         return ResponseEntity.ok(responseWrapperDto);
     }
 

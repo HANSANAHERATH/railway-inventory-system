@@ -1,17 +1,23 @@
 package com.railway.railwayservice.service;
 
 import com.railway.railwayservice.Exceptions.ItemAllReadyExistingException;
-import com.railway.railwayservice.Exceptions.ItemCountDecrementException;
 import com.railway.railwayservice.Exceptions.ItemNotFoundException;
 import com.railway.railwayservice.Exceptions.RuntimeExceptionHere;
-import com.railway.railwayservice.dtos.ItemCreateRequestDto;
-import com.railway.railwayservice.dtos.LookupResponseDto;
+import com.railway.railwayservice.dtos.GoodsEntityResponseDto;
+import com.railway.railwayservice.dtos.InventoryPaginationDto;
+import com.railway.railwayservice.dtos.GoodsCreateRequestDto;
 import com.railway.railwayservice.dtos.common.ResponseWrapperDto;
-import com.railway.railwayservice.entity.ItemUnits;
-import com.railway.railwayservice.entity.ItemsEntity;
+import com.railway.railwayservice.entity.CategoryEntity;
+import com.railway.railwayservice.entity.GoodsEntity;
+import com.railway.railwayservice.entity.UnitsEntity;
+import com.railway.railwayservice.repository.ItemCategoryRepository;
 import com.railway.railwayservice.repository.ItemRepository;
 import com.railway.railwayservice.repository.UnitRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -31,91 +37,93 @@ public class ItemServiceImpl implements ItemService{
     @Autowired
     private UnitRepository unitRepository;
 
+    @Autowired
+    private ItemCategoryRepository itemCategoryRepository;
+
     @Transactional
     @Override
-    public ResponseWrapperDto createItem(ItemCreateRequestDto itemCreateRequestDto) throws RuntimeExceptionHere {
+    public ResponseWrapperDto createItem(GoodsCreateRequestDto goodsCreateRequestDto) throws RuntimeExceptionHere {
         try {
             ResponseWrapperDto responseWrapperDto = null;
+            Optional<GoodsEntity> isExistingGood = itemRepository.findByNameAndIsDeleted(goodsCreateRequestDto.getGoodName(), false);
 
-            Optional<ItemsEntity> isExisting = itemRepository.findByItemNameAndIsDeleted(itemCreateRequestDto.getItemName(), false);
-            if(isExisting.isPresent()){
+            if(isExistingGood.isPresent()){
                 throw new ItemAllReadyExistingException();
             }
 
-            ItemUnits itemUnits = new ItemUnits();
-            itemUnits.setId(itemCreateRequestDto.getUnitId());
+            UnitsEntity unitsEntity = new UnitsEntity();
+            unitsEntity.setId(goodsCreateRequestDto.getUnitId());
 
-            ItemsEntity itemsEntity = new ItemsEntity();
-            itemsEntity.setItemName(itemCreateRequestDto.getItemName());
-            itemsEntity.setNotes(itemCreateRequestDto.getNotes());
-            itemsEntity.setQuantity(itemCreateRequestDto.getQuantity());
-            itemsEntity.setItemUnits(itemUnits);
-            itemsEntity.setDate(stringDateToLocalDateTime(itemCreateRequestDto.getDate()));
-            itemsEntity.setBalance(itemCreateRequestDto.getQuantity());
-            ItemsEntity response = itemRepository.saveAndFlush(itemsEntity);
+            CategoryEntity categoryEntity = new CategoryEntity();
+            categoryEntity.setId((long) goodsCreateRequestDto.getCategory());
 
-            responseWrapperDto = new ResponseWrapperDto(true, "Saved Successful", null);
+            GoodsEntity goodsEntity = new GoodsEntity();
+            goodsEntity.setName(goodsCreateRequestDto.getGoodName());
+            goodsEntity.setDescription(goodsCreateRequestDto.getDescription());
+            goodsEntity.setUnitsEntity(unitsEntity);
+            goodsEntity.setDate(stringDateToLocalDateTime(goodsCreateRequestDto.getDate()));
+            goodsEntity.setCategoryEntity(categoryEntity);
+            goodsEntity.setMinQuantity(goodsCreateRequestDto.getMinQuantity());
+            GoodsEntity response = itemRepository.saveAndFlush(goodsEntity);
+
+            if(response.getId() != null){
+                responseWrapperDto = new ResponseWrapperDto(true, "Saved Successful", null);
+            } else{
+                responseWrapperDto = new ResponseWrapperDto(false, "Saved Failed", null);
+            }
+
             return responseWrapperDto;
         }catch (Exception e){
+            e.printStackTrace();
             throw new RuntimeExceptionHere(e);
         }
     }
 
     @Transactional
     @Override
-    public ResponseWrapperDto updateItem(ItemCreateRequestDto itemCreateRequestDto, long id) {
+    public ResponseWrapperDto updateItem(GoodsCreateRequestDto goodsCreateRequestDto, long id) {
         ResponseWrapperDto responseWrapperDto = null;
+        Optional<GoodsEntity> isExistingGood = itemRepository.findByIdAndIsDeleted(id, false);
 
-        Optional<ItemsEntity> isExisting = itemRepository.findByIdAndIsDeleted(id, false);
-        if(!isExisting.isPresent()){
+        if(!isExistingGood.isPresent()){
             throw new ItemNotFoundException();
         }
 
-        ItemUnits itemUnits = new ItemUnits();
-        itemUnits.setId(itemCreateRequestDto.getUnitId());
+        UnitsEntity unitsEntity = new UnitsEntity();
+        unitsEntity.setId(goodsCreateRequestDto.getUnitId());
 
-        ItemsEntity itemsEntity = new ItemsEntity();
-        itemsEntity.setId(id);
-        itemsEntity.setItemName(itemCreateRequestDto.getItemName());
-        itemsEntity.setNotes(itemCreateRequestDto.getNotes());
-        itemsEntity.setQuantity(itemCreateRequestDto.getQuantity());
-        itemsEntity.setItemUnits(itemUnits);
+        CategoryEntity categoryEntity = new CategoryEntity();
+        categoryEntity.setId((long) goodsCreateRequestDto.getCategory());
 
-        float balance = isExisting.get().getBalance();
-        float diff = itemCreateRequestDto.getQuantity() - isExisting.get().getQuantity();
-        balance = balance + diff;
+        GoodsEntity goodsEntity = new GoodsEntity();
+        goodsEntity.setId(id);
+        goodsEntity.setName(goodsCreateRequestDto.getGoodName());
+        goodsEntity.setDescription(goodsCreateRequestDto.getDescription());
+        goodsEntity.setUnitsEntity(unitsEntity);
+        goodsEntity.setCategoryEntity(categoryEntity);
+        goodsEntity.setMinQuantity(goodsCreateRequestDto.getMinQuantity());
+        goodsEntity.setDate(stringDateToLocalDateTime(goodsCreateRequestDto.getDate()));
+        GoodsEntity response = itemRepository.saveAndFlush(goodsEntity);
 
-        if(diff < 0){
-            throw new ItemCountDecrementException();
+        if(response.getId() != null){
+            responseWrapperDto = new ResponseWrapperDto(true, "Update Successful", response);
+        }else {
+            responseWrapperDto = new ResponseWrapperDto(false, "Update Failed", response);
         }
-
-        itemsEntity.setBalance(balance);
-
-        itemsEntity.setDate(stringDateToLocalDateTime(itemCreateRequestDto.getDate()));
-
-        ItemsEntity response = itemRepository.saveAndFlush(itemsEntity);
-
-        responseWrapperDto = new ResponseWrapperDto(true, "Update Successful", response);
         return responseWrapperDto;
     }
 
     @Override
     public ResponseWrapperDto deleteItem(long id) {
         ResponseWrapperDto responseWrapperDto = null;
+        Optional<GoodsEntity> isExistingGood = itemRepository.findByIdAndIsDeleted(id, false);
 
-        Optional<ItemsEntity> isExisting = itemRepository.findByIdAndIsDeleted(id, false);
-        if(!isExisting.isPresent()){
+        if(!isExistingGood.isPresent()){
             throw new ItemNotFoundException();
         }
 
-        isExisting.get().setDeleted(true);
-
-        ItemsEntity response = itemRepository.saveAndFlush(isExisting.get());
-
-        if(response.getId() == null){
-
-        }
-
+        isExistingGood.get().setDeleted(true);
+        GoodsEntity response = itemRepository.saveAndFlush(isExistingGood.get());
         responseWrapperDto = new ResponseWrapperDto(true, "Delete Successful", response);
         return responseWrapperDto;
     }
@@ -123,42 +131,49 @@ public class ItemServiceImpl implements ItemService{
     @Override
     public ResponseWrapperDto getItem(long id) {
         ResponseWrapperDto responseWrapperDto = null;
-
-        Optional<ItemsEntity> isExisting = itemRepository.findByIdAndIsDeleted(id, false);
+        Optional<GoodsEntity> isExisting = itemRepository.findByIdAndIsDeleted(id, false);
         if(!isExisting.isPresent()){
             throw new ItemNotFoundException();
         }
-
         responseWrapperDto = new ResponseWrapperDto(true,"Get Item Successful" ,isExisting);
         return  responseWrapperDto;
     }
 
     @Override
-    public ResponseWrapperDto getAllItem() {
+    public ResponseWrapperDto getAllItem(int categoryId, int size, int page) {
         ResponseWrapperDto responseWrapperDto = null;
 
-        List<ItemsEntity> isExisting = itemRepository.findByIsDeleted(false);
-        List<LookupResponseDto> responseList = new ArrayList<>();
-        isExisting.forEach(it -> {
-            LookupResponseDto itemResponseDto = new LookupResponseDto();
-            itemResponseDto.setId(it.getId());
-            itemResponseDto.setItemName(it.getItemName());
-            itemResponseDto.setItemUnits(it.getItemUnits());
-            itemResponseDto.setBalance(it.getBalance());
-            itemResponseDto.setDate(it.getDate());
-            itemResponseDto.setDeleted(it.isDeleted());
-            itemResponseDto.setNotes(it.getNotes());
-            itemResponseDto.setQuantity(it.getQuantity());
-            responseList.add(itemResponseDto);
-        });
-       responseWrapperDto = new ResponseWrapperDto(true, "Get All Items Successful", responseList);
+        CategoryEntity itemCategory = new CategoryEntity();
+        itemCategory.setId((long)categoryId);
+
+        Pageable paging = PageRequest.of(page, size, Sort.by("name"));
+        Page<GoodsEntityResponseDto> result = itemRepository.findGoodsEntities(itemCategory, false, paging);
+        InventoryPaginationDto inventoryPaginationDto = new InventoryPaginationDto(
+                result.getTotalElements(),
+                result.getTotalPages(),
+                size,
+                page,
+                new ArrayList<GoodsEntity>());
+
+        if(result.hasContent()) {
+            inventoryPaginationDto.setContent(result.getContent());
+        }
+
+        responseWrapperDto = new ResponseWrapperDto(true, "Get All Items Successful", inventoryPaginationDto);
         return responseWrapperDto;
     }
 
     @Override
     public ResponseWrapperDto getUnitList() {
-        List<ItemUnits> unitList = unitRepository.findAll();
+        List<UnitsEntity> unitList = unitRepository.findAll();
         ResponseWrapperDto responseWrapperDto = new ResponseWrapperDto(true,"success",unitList);
+        return responseWrapperDto;
+    }
+
+    @Override
+    public ResponseWrapperDto getItemCategoryList() {
+        List<CategoryEntity> categoryList = itemCategoryRepository.findAll();
+        ResponseWrapperDto responseWrapperDto = new ResponseWrapperDto(true,"success",categoryList);
         return responseWrapperDto;
     }
 

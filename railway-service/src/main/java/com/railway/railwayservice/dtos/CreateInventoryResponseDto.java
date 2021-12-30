@@ -1,7 +1,7 @@
 package com.railway.railwayservice.dtos;
 
-import com.railway.railwayservice.entity.ItemUnits;
-import com.railway.railwayservice.entity.ItemsEntity;
+import com.railway.railwayservice.entity.GoodsEntity;
+import com.railway.railwayservice.entity.UnitsEntity;
 import lombok.Data;
 
 @Data
@@ -16,6 +16,6 @@ public class CreateInventoryResponseDto {
     private String supervisorName;
     private String handoverTo;
     private String additionalNote;
-    private ItemsEntity itemsEntity;
-    private ItemUnits itemUnits;
+    private GoodsEntity goodsEntity;
+    private UnitsEntity unitsEntity;
 }

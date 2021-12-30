@@ -1,6 +1,6 @@
 package com.railway.railwayservice.controllers;
 
-import com.railway.railwayservice.dtos.ItemCreateRequestDto;
+import com.railway.railwayservice.dtos.GoodsCreateRequestDto;
 import com.railway.railwayservice.dtos.common.ResponseWrapperDto;
 import com.railway.railwayservice.service.ItemService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,21 +20,21 @@ public class ItemsController {
         return ResponseEntity.ok(responseWrapperDto);
     }
 
-    @GetMapping
-    public ResponseEntity<ResponseWrapperDto> getAllItem(){
-        ResponseWrapperDto responseWrapperDto = itemService.getAllItem();
+    @GetMapping(path = "/all/{id}/{size}/{page}")
+    public ResponseEntity<ResponseWrapperDto> getAllItem(@PathVariable("id") int categoryId, @PathVariable("size") int size, @PathVariable("page") int page){
+        ResponseWrapperDto responseWrapperDto = itemService.getAllItem(categoryId, size, page);
         return ResponseEntity.ok(responseWrapperDto);
     }
 
     @PostMapping
-    public ResponseEntity<ResponseWrapperDto> createItem(@RequestBody ItemCreateRequestDto itemCreateRequestDto){
-        ResponseWrapperDto responseWrapperDto = itemService.createItem(itemCreateRequestDto);
+    public ResponseEntity<ResponseWrapperDto> createItem(@RequestBody GoodsCreateRequestDto goodsCreateRequestDto){
+        ResponseWrapperDto responseWrapperDto = itemService.createItem(goodsCreateRequestDto);
         return ResponseEntity.ok(responseWrapperDto);
     }
 
     @PutMapping(path = "/{id}")
-    public ResponseEntity<ResponseWrapperDto> updateItem(@RequestBody ItemCreateRequestDto itemCreateRequestDto, @PathVariable("id") long id){
-        ResponseWrapperDto responseWrapperDto = itemService.updateItem(itemCreateRequestDto, id);
+    public ResponseEntity<ResponseWrapperDto> updateItem(@RequestBody GoodsCreateRequestDto goodsCreateRequestDto, @PathVariable("id") long id){
+        ResponseWrapperDto responseWrapperDto = itemService.updateItem(goodsCreateRequestDto, id);
         return ResponseEntity.ok(responseWrapperDto);
     }
 
@@ -47,6 +47,12 @@ public class ItemsController {
     @GetMapping(path = "/unitList")
     public ResponseEntity<ResponseWrapperDto> getUnitList(){
         ResponseWrapperDto responseWrapperDto = itemService.getUnitList();
+        return ResponseEntity.ok(responseWrapperDto);
+    }
+
+    @GetMapping(path = "/itemCategoryList")
+    public ResponseEntity<ResponseWrapperDto> getItemCategoryList(){
+        ResponseWrapperDto responseWrapperDto = itemService.getItemCategoryList();
         return ResponseEntity.ok(responseWrapperDto);
     }
 }

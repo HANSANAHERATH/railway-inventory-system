@@ -1,18 +1,20 @@
 package com.railway.railwayservice.service;
 
-import com.railway.railwayservice.dtos.ItemCreateRequestDto;
+import com.railway.railwayservice.dtos.GoodsCreateRequestDto;
 import com.railway.railwayservice.dtos.common.ResponseWrapperDto;
 
 public interface ItemService {
-    ResponseWrapperDto createItem(ItemCreateRequestDto itemCreateRequestDto);
+    ResponseWrapperDto createItem(GoodsCreateRequestDto goodsCreateRequestDto);
 
-    ResponseWrapperDto updateItem(ItemCreateRequestDto itemCreateRequestDto, long id);
+    ResponseWrapperDto updateItem(GoodsCreateRequestDto goodsCreateRequestDto, long id);
 
     ResponseWrapperDto deleteItem(long id);
 
     ResponseWrapperDto getItem(long id);
 
-    ResponseWrapperDto getAllItem();
+    ResponseWrapperDto getAllItem(int categoryId, int size, int page);
 
     ResponseWrapperDto getUnitList();
+
+    ResponseWrapperDto getItemCategoryList();
 }

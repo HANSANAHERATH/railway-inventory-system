@@ -1,5 +1,6 @@
 package com.railway.railwayservice.entity;
 
+import com.railway.railwayservice.enums.InventoryType;
 import lombok.Data;
 
 import javax.persistence.*;
@@ -9,8 +10,8 @@ import java.time.LocalTime;
 
 @Entity
 @Data
-@Table(name = "item_inventory")
-public class ItemInventory implements Serializable {
+@Table(name = "inventory")
+public class InventoryEntity implements Serializable {
     @Id
     @Column(name = "id", nullable = false)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -18,19 +19,21 @@ public class ItemInventory implements Serializable {
 
     private LocalDate date;
     private LocalTime time;
-    private String reference;
     private String shedStoreNo;
     private String description;
     private float quantity;
     private String supervisorName;
     private String handoverTo;
-    private String additionalNote;
+
+    @Column(name = "inventory_type", length = 10)
+    @Enumerated(EnumType.STRING)
+    private InventoryType inventoryType;
 
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @JoinColumn(name = "items_entity_id")
-    private ItemsEntity itemsEntity;
+    @JoinColumn(name = "goods_id")
+    private GoodsEntity goodsEntity;
 
-    @OneToOne(targetEntity = ItemUnits.class)
-    @JoinColumn(name = "m_units", referencedColumnName = "id")
-    private ItemUnits itemUnits;
+    @OneToOne(targetEntity = UnitsEntity.class)
+    @JoinColumn(name = "unit_id", referencedColumnName = "id")
+    private UnitsEntity unitsEntity;
 }
