@@ -334,7 +334,7 @@ const ItemInventoryList = ({
             {searchItemName !== "" ? (
               <div>
                 <Alert severity="info" className={classes.alertWrapper}>
-                  {itemsInventoryList.length > 0 ? <div>Remain Quantity: {itemsInventoryList[0]?.totalQuantity} {unitList.filter(res => res.id === itemsInventoryList[0]?.unit)[0]?.name}</div> : <div>No Data</div>}
+                  {itemsInventoryList.length > 0 ? <div>Remaining Quantity: {itemsInventoryList[0]?.totalQuantity} {unitList.filter(res => res.id === itemsInventoryList[0]?.unit)[0]?.name}</div> : <div>No Data</div>}
                 </Alert>
                 <br />
                 <br />

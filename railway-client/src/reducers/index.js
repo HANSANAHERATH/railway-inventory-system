@@ -1,6 +1,6 @@
 import { combineReducers } from 'redux';
 import signinReducer from './signin';
-import sessionReducer from './session';
+import goodsReducer from './goods';
 import tokenReducer from './token';
 import ItemInventoryReducer from './ItemInventory';
 
@@ -11,7 +11,7 @@ import ItemInventoryReducer from './ItemInventory';
 // list the reducers list
 export default combineReducers({
     signin: signinReducer,
-    session: sessionReducer,
+    goods: goodsReducer,
     token: tokenReducer,
     itemInventory: ItemInventoryReducer,
 });

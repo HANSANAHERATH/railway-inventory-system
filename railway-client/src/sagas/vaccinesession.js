@@ -1,6 +1,6 @@
 import { call, all, put, takeLatest } from 'redux-saga/effects';
 
-import sessionApi from '../services/sessionApi';
+import sessionApi from '../services/goodsApi';
 
 import { FETCH_CENTERS, SUBMIT_FORM_SESSION } from '../actions/types';
 
@@ -9,7 +9,7 @@ import {
     fetchCentersFailed,
     submitFormSessionCreateSuccess,
     submitFormSessionCreateFailed,
-} from '../actions/session';
+} from '../actions/goods';
 
 function* fetchCenters() {
     try {

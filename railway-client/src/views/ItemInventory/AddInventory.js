@@ -15,7 +15,7 @@ import Draggable from "react-draggable";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 
 import DialogTitle from "./DialogTitle";
-import { InputAdornment } from "@material-ui/core";
+import { FormControlLabel, InputAdornment, Radio, RadioGroup } from "@material-ui/core";
 import { submitItemInventoryCreate, submitItemInventoryCreateReset } from "actions/ItemInventory";
 
 function Alert(props) {
@@ -178,37 +178,27 @@ const AddInventory = ({
   const [description, setDescription] = React.useState("");
   const [supervisorName, setSupervisorName] = React.useState("");
   const [handoverTo, setHandoverTo] = React.useState("");
-  const [itemInventoryType, setItemInventoryType] = React.useState("");
+  const [itemInventoryType, setItemInventoryType] = React.useState("GOODS_OUT");
   
   const validForm =
-    itemName !== "" && quantity !== "" && unitType !== "" && notes !== "" && itemInventoryType !== "";
+    itemName !== "" && quantity !== "" && unitType !== "" && itemInventoryType !== "";
 
   useEffect(() => {
     if (item != null) {
-      console.log(item)
       setItemName(item.name);
-      setUnitType(item?.unit?.name);
+      setUnitType(item?.unitsEntity?.name);
     }
   }, [item,random]);
 
   /** Change state when change inputs */
 
-  const handleNotesChange = (event) => {
-    let temp = event.target.value || "";
-    setNotes(temp);
-  };
-
-  const handleSelectInventoryType = (event, value) => {
-    setItemInventoryType(value || '');
+  const handleSelectInventoryType = (event) => {
+    setItemInventoryType(event.target.value);
   }
 
   const handleQuantityChange = (event) => {
     let tmpSessionVaccines = Math.abs(event.target.value);
     setQuantity(tmpSessionVaccines);
-  };
-
-  const handleReferenceChange = (event) => {
-    setReference(event.target.value);
   };
 
   const handleShedStoreNoChange = (event) => {
@@ -234,17 +224,13 @@ const AddInventory = ({
     setLoading(true);
     submitItemInventoryCreate({
       id: null,
-      additionalNote: notes,
       quantity: parseFloat(quantity),
-      unitId: unitType?.id,
-      userId: 0,
-      reference: reference,
       shedStoreNo: shedStoreNo,
       description: description,
       supervisorName: supervisorName,
       handoverTo: handoverTo,
-      itemsEntityId: item?.id,
-      inventoryType : '',
+      inventoryType : itemInventoryType,
+      goodsId: item?.id,
     });
   };
   /** Submit form for create a session End*/
@@ -371,39 +357,18 @@ const AddInventory = ({
               <br />
               <br />
               <div className={classes.inputLabel}>Inventory Type</div>
-              <Autocomplete
-                className={classes.inputFeild}
-                id="itemInventoryType"
+              <RadioGroup
+                aria-label="inventoryType"
+                name="radio-buttons-group"
+                row
                 value={itemInventoryType}
-                options={[{id: 1, name: 'Credited'}, {id: 2, name: 'Debited'}]}
-                getOptionLabel={(option) => option?.name || ""}
-                renderInput={(params) => (
-                  <TextField 
-                    {...params} 
-                    variant="outlined"
-                     />
-                )}
-                onChange={(event, newValue) => {
-                  handleSelectInventoryType(event, newValue);
-                 }}
-              />
-              <br />
-              <br />
+                onChange={handleSelectInventoryType}
 
-              <div className={classes.inputLabel}>Reference</div>
-              <TextField
-                className={classes.inputFeild}
-                required
-                type="text"
-                id="reference"
-                variant="outlined"
-                onChange={handleReferenceChange}
-                value={reference || ""}
-              />
-
-              <br />
-              <br />
-
+              >
+                <FormControlLabel value="GOODS_IN" control={<Radio />} label="Goods In" />
+                <FormControlLabel value="GOODS_OUT" control={<Radio />} label="Goods Out" />
+              </RadioGroup>
+              <br/>
               <div className={classes.inputLabel}>Shed Store No</div>
               <TextField
                 className={classes.inputFeild}
@@ -455,20 +420,6 @@ const AddInventory = ({
                 variant="outlined"
                 onChange={handleHandoverToChange}
                 value={handoverTo || ""}
-              />
-
-              <br />
-              <br />
-
-              <div className={classes.inputLabel}>Additional Note</div>
-              <TextField
-                className={classes.inputFeild}
-                required
-                type="text"
-                id="notes"
-                variant="outlined"
-                onChange={handleNotesChange}
-                value={notes || ""}
               />
             </div>
           ) : null}

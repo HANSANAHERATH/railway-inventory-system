@@ -1,12 +1,12 @@
 import signInSaga from './signIn';
-import sessionSaga from './session';
+import GoodsSaga from './goods';
 import tokenSaga from './token';
 import ItemInventory from './ItemInventory';
 
 /**
  * Add new sagas here
  */
-const sagas = [signInSaga, sessionSaga, tokenSaga, ItemInventory];
+const sagas = [signInSaga, GoodsSaga, tokenSaga, ItemInventory];
 
 /**
  * Combine sagas for redux middleware

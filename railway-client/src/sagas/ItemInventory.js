@@ -63,8 +63,11 @@ function* fetchInventoryList({ payload }) {
         }
     } catch (err) {
         const data = {
-            data : [],
-            status: true,
+            content: [],
+            page: 0,
+            pageSize: 0,
+            totalCount: 0,
+            totalPage: 0,
             statusMessage: "ERROR",
         }
         yield put(getInventoryListFailed(data));

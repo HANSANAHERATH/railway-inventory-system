@@ -11,5 +11,6 @@ import java.util.List;
 
 public interface GoodNameLookupResponseDto {
     Long getId();
-     String getName();
+    String getName();
+    UnitsEntity getUnitsEntity();
 }

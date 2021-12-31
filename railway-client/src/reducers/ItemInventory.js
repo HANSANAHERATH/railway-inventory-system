@@ -15,7 +15,7 @@ import {
 const initialState = {
     loading: false,
     error: undefined,
-    lookups: {
+    nameLookups: {
         data: [],
     },
     confirmation: {
@@ -23,11 +23,11 @@ const initialState = {
         error: undefined,
     },
     inventory: {
-        balanceDto: {
-            balance: 0,
-            totalQuantity: 0,
-        },
-        data: []
+        content: [],
+        page: 0,
+        pageSize: 0,
+        totalCount: 0,
+        totalPage: 0,
     }
 
 };
@@ -43,8 +43,8 @@ const ItemInventoryReducer = (state = initialState, action) => {
             return {
                 ...state,
                 loading: false,
-                lookups: {
-                    ...state.lookups,
+                nameLookups: {
+                    ...state.nameLookups,
                     data: action?.payload?.body,
                 }
             };
@@ -53,8 +53,8 @@ const ItemInventoryReducer = (state = initialState, action) => {
                 ...state,
                 loading: false,
                 error: 'Fetch items failed.',
-                lookups: {
-                    ...state.lookups,
+                nameLookups: {
+                    ...state.nameLookups,
                     data: [],
                 }
             };
@@ -63,8 +63,8 @@ const ItemInventoryReducer = (state = initialState, action) => {
                 ...state,
                 loading: false,
                 error: undefined,
-                lookups: {
-                    ...state.lookups,
+                nameLookups: {
+                    ...state.nameLookups,
                     data: [],
                 }
             };
@@ -111,13 +111,17 @@ const ItemInventoryReducer = (state = initialState, action) => {
                 loading: true,
             };
         case FETCH_INVENTORY_SUCCESS:
+            console.log(action?.payload)
             return {
                 ...state,
                 loading: false,
                 inventory: {
                     ...state.inventory,
-                    balanceDto: action?.payload?.body?.balanceDto,
-                    data: action?.payload?.body?.getAllInventoryResponseDtos,
+                    content: action?.payload?.body?.content,
+                    page: action?.payload?.body?.page,
+                    pageSize: action?.payload?.body?.pageSize,
+                    totalCount: action?.payload?.body?.totalCount,
+                    totalPage: action?.payload?.body?.totalPage,
                 }
             };
         case FETCH_INVENTORY_FAILED:
@@ -127,11 +131,11 @@ const ItemInventoryReducer = (state = initialState, action) => {
                 error: 'Fetch items failed.',
                 inventory: {
                     ...state.inventory,
-                    balanceDto: {
-                        balance: 0,
-                        totalQuantity: 0,
-                    },
-                    data: [],
+                    content: [],
+                    page: 0,
+                    pageSize: 0,
+                    totalCount: 0,
+                    totalPage: 0,
                 }
             };
         case FETCH_INVENTORY_RESET:
@@ -141,11 +145,11 @@ const ItemInventoryReducer = (state = initialState, action) => {
                 error: undefined,
                 inventory: {
                     ...state.inventory,
-                    balanceDto: {
-                        balance: 0,
-                        totalQuantity: 0,
-                    },
-                    data: [],
+                    content: [],
+                    page: 0,
+                    pageSize: 0,
+                    totalCount: 0,
+                    totalPage: 0,
                 }
             };
         default:
