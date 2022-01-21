@@ -12,8 +12,6 @@ import "date-fns";
 import MuiAlert from "@material-ui/lab/Alert";
 import Paper from "@material-ui/core/Paper";
 import Draggable from "react-draggable";
-import Autocomplete from "@material-ui/lab/Autocomplete";
-
 import DialogTitle from "./DialogTitle";
 import { FormControlLabel, InputAdornment, Radio, RadioGroup } from "@material-ui/core";
 import { submitItemInventoryCreate, submitItemInventoryCreateReset } from "actions/ItemInventory";
@@ -172,8 +170,6 @@ const AddInventory = ({
   const [itemName, setItemName] = React.useState("");
   const [quantity, setQuantity] = React.useState("");
   const [unitType, setUnitType] = React.useState([]);
-  const [notes, setNotes] = React.useState("");
-  const [reference, setReference] = React.useState("");
   const [shedStoreNo, setShedStoreNo] = React.useState("");
   const [description, setDescription] = React.useState("");
   const [supervisorName, setSupervisorName] = React.useState("");
@@ -246,8 +242,6 @@ const AddInventory = ({
   const handleResetSessionObj = () => {
     setItemName("");
     setQuantity("");
-    setNotes("");
-    setReference("");
     setShedStoreNo("");
     setDescription("");
     setSupervisorName("");

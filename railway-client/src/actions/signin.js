@@ -3,7 +3,6 @@ import {
     LOGIN_WITH_USER_PASS,
     LOGIN_WITH_USER_PASS_SUCCESS,
     LOGIN_WITH_USER_PASS_FAILED,
-    LOGIN_WITH_USER_PASS_RESET
 } from './types';
 
 export const logout = payload => {

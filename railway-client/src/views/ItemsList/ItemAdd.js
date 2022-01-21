@@ -3,7 +3,6 @@ import { connect } from "react-redux";
 import { withStyles, makeStyles } from "@material-ui/core/styles";
 import Button from "@material-ui/core/Button";
 import Dialog from "@material-ui/core/Dialog";
-import MuiDialogTitle from "@material-ui/core/DialogTitle";
 import MuiDialogContent from "@material-ui/core/DialogContent";
 import MuiDialogActions from "@material-ui/core/DialogActions";
 import Typography from "@material-ui/core/Typography";
@@ -12,11 +11,6 @@ import DeleteIcon from "@material-ui/icons/Delete";
 import TextField from "@material-ui/core/TextField";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import "date-fns";
-import DateFnsUtils from "@date-io/date-fns";
-import {
-  MuiPickersUtilsProvider,
-  KeyboardDatePicker,
-} from "@material-ui/pickers";
 import MuiAlert from "@material-ui/lab/Alert";
 import {
   resetItemCreateForm,
@@ -25,19 +19,11 @@ import {
   submitFormItemUpdate,
   submitFormItemRemove,
 } from "actions/goods";
-import IconButton from "@material-ui/core/IconButton";
-import CloseIcon from "@material-ui/icons/Close";
 import moment from "moment";
 import Paper from "@material-ui/core/Paper";
 import Draggable from "react-draggable";
-
-import CheckBoxOutlineBlankIcon from "@material-ui/icons/CheckBoxOutlineBlank";
-import CheckBoxIcon from "@material-ui/icons/CheckBox";
 import DialogTitle from "./DialogTitle";
 import { InputAdornment } from "@material-ui/core";
-
-const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
-const checkedIcon = <CheckBoxIcon fontSize="small" />;
 
 function Alert(props) {
   return <MuiAlert elevation={6} variant="filled" {...props} />;
@@ -220,12 +206,6 @@ const ItemAdd = ({
   const handleNotesChange = (event) => {
     let temp = event.target.value || "";
     setNotes(temp);
-  };
-
-  const handleSessionDateChange = (event) => {
-    let tmpDate = new Date(event);
-    tmpDate = moment(tmpDate).format(moment.HTML5_FMT.DATE);
-    setDate(tmpDate);
   };
 
   const handleMinQuantityChange = (event) => {

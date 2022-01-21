@@ -9,7 +9,6 @@ import Spinner from "views/Common/Spinner";
 import { Redirect } from "react-router-dom";
 import {
   FormControlLabel,
-  FormLabel,
   Radio,
   RadioGroup,
   Table,

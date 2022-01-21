@@ -16,8 +16,6 @@ import { connect } from 'react-redux';
 
 import { logout } from 'actions/signin';
 import { getRefreshToken } from 'actions/token';
-import jwt_decode from "jwt-decode";
-import moment from 'moment';
 
 const browserHistory = createBrowserHistory();
 
@@ -39,15 +37,7 @@ class App extends Component {
 
     handleOnAction(event) {
         if(sessionStorage.getItem('loginSuccess')){
-            //sessionStorage.setItem('loginSuccessTime', new Date());
-           // var token = sessionStorage.getItem("token")
-           // var decoded = jwt_decode(token);
-           // let expireTime = moment(new Date(decoded.exp*1000));
-            //let beforeTimeExpire = moment(expireTime - (5 * 60 * 1000)); // minite
-        
-           /*  if( moment(new Date()).isAfter(beforeTimeExpire) &&  beforeTimeExpire.isBefore(expireTime)){
-                this.props.getRefreshToken();
-            } */
+          
         }
     }
 

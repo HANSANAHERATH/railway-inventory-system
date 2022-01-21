@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { withStyles } from '@material-ui/styles';
 import MuiDialogTitle from '@material-ui/core/DialogTitle';
 import { IconButton, Typography } from '@material-ui/core';

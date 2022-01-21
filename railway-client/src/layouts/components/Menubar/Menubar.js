@@ -8,7 +8,7 @@ import Button from "@material-ui/core/Button";
 import { logout } from "actions/signin";
 import { connect } from "react-redux";
 import { useLocation } from "react-router-dom";
-import jwt_decode from "jwt-decode";
+//import jwt_decode from "jwt-decode";
 
 const useStyles = makeStyles((theme) => ({
   root: {

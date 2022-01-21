@@ -2,7 +2,6 @@ import {
     LOGIN_WITH_USER_PASS,
     LOGIN_WITH_USER_PASS_SUCCESS,
     LOGIN_WITH_USER_PASS_FAILED,
-    LOGIN_WITH_USER_PASS_RESET
 } from '../actions/types';
 
 const initialState = {
