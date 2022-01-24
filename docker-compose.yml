@@ -1,28 +1,33 @@
-version: "3.8"
+version: "3.0"
 
 services:
   db:
-    image: postgres
+    image: postgres:14.1-alpine
+    restart: always
     ports:
-      - "5433:5432"
+      - "5435:5432"
     environment:
-      - POSTGRES_DB=inventory
+      - POSTGRES_DB=postgres
       - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=postgres
-    volumes:
-      - database-data:/ICTA/Works/data/
+      - POSTGRES_PASSWORD=root
+    volumes: 
+      #- ./postgres-data:/var/lib/postgresql/data
+      # copy the sql script to create tables
+      - ./db/init.sql:/docker-entrypoint-initdb.d/create_tables.sql
   nginx:
-    image: railway_system/nginx
+    image: railway_system/nginx:latest
     ports:
-      - "81:80"
-  client_service:
+      - "80:80"
+    volumes:
+      - E:/Works/railway-inventory-system/nginx/nginx.conf:/etc/nginx/nginx.conf
+  client:
     image: railway_system/railway-service
     ports: 
       - "8082:8080"
     depends_on:
       - db
     environment:
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5433/inventory
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/postgres
       - SPRING_DATASOURCE_USERNAME=postgres
-      - SPRING_DATASOURCE_PASSWORD=postgres
+      - SPRING_DATASOURCE_PASSWORD=root
       - SPRING_JPA_HIBERNATE_DDL_AUTO=none
