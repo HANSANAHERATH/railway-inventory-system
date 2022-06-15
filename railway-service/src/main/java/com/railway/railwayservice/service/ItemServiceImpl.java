@@ -13,7 +13,6 @@ import com.railway.railwayservice.entity.UnitsEntity;
 import com.railway.railwayservice.repository.ItemCategoryRepository;
 import com.railway.railwayservice.repository.ItemRepository;
 import com.railway.railwayservice.repository.UnitRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -31,20 +30,23 @@ import java.util.Optional;
 @Transactional
 public class ItemServiceImpl implements ItemService{
 
-    @Autowired
-    private ItemRepository itemRepository;
+    private final ItemRepository itemRepository;
 
-    @Autowired
-    private UnitRepository unitRepository;
+    private final UnitRepository unitRepository;
 
-    @Autowired
-    private ItemCategoryRepository itemCategoryRepository;
+    private final ItemCategoryRepository itemCategoryRepository;
+
+    public ItemServiceImpl(ItemRepository itemRepository, UnitRepository unitRepository, ItemCategoryRepository itemCategoryRepository) {
+        this.itemRepository = itemRepository;
+        this.unitRepository = unitRepository;
+        this.itemCategoryRepository = itemCategoryRepository;
+    }
 
     @Transactional
     @Override
     public ResponseWrapperDto createItem(GoodsCreateRequestDto goodsCreateRequestDto) throws RuntimeExceptionHere {
         try {
-            ResponseWrapperDto responseWrapperDto = null;
+            ResponseWrapperDto responseWrapperDto;
             Optional<GoodsEntity> isExistingGood = itemRepository.findByNameAndIsDeleted(goodsCreateRequestDto.getGoodName(), false);
 
             if(isExistingGood.isPresent()){
@@ -81,8 +83,8 @@ public class ItemServiceImpl implements ItemService{
 
     @Transactional
     @Override
-    public ResponseWrapperDto updateItem(GoodsCreateRequestDto goodsCreateRequestDto, long id) {
-        ResponseWrapperDto responseWrapperDto = null;
+    public ResponseWrapperDto<GoodsEntity> updateItem(GoodsCreateRequestDto goodsCreateRequestDto, long id) {
+        ResponseWrapperDto<GoodsEntity> responseWrapperDto;
         Optional<GoodsEntity> isExistingGood = itemRepository.findByIdAndIsDeleted(id, false);
 
         if(!isExistingGood.isPresent()){
@@ -106,16 +108,16 @@ public class ItemServiceImpl implements ItemService{
         GoodsEntity response = itemRepository.saveAndFlush(goodsEntity);
 
         if(response.getId() != null){
-            responseWrapperDto = new ResponseWrapperDto(true, "Update Successful", response);
+            responseWrapperDto = new ResponseWrapperDto<>(true, "Update Successful", response);
         }else {
-            responseWrapperDto = new ResponseWrapperDto(false, "Update Failed", response);
+            responseWrapperDto = new ResponseWrapperDto<>(false, "Update Failed", response);
         }
         return responseWrapperDto;
     }
 
     @Override
-    public ResponseWrapperDto deleteItem(long id) {
-        ResponseWrapperDto responseWrapperDto = null;
+    public ResponseWrapperDto<GoodsEntity> deleteItem(long id) {
+        ResponseWrapperDto<GoodsEntity> responseWrapperDto;
         Optional<GoodsEntity> isExistingGood = itemRepository.findByIdAndIsDeleted(id, false);
 
         if(!isExistingGood.isPresent()){
@@ -124,31 +126,31 @@ public class ItemServiceImpl implements ItemService{
 
         isExistingGood.get().setDeleted(true);
         GoodsEntity response = itemRepository.saveAndFlush(isExistingGood.get());
-        responseWrapperDto = new ResponseWrapperDto(true, "Delete Successful", response);
+        responseWrapperDto = new ResponseWrapperDto<>(true, "Delete Successful", response);
         return responseWrapperDto;
     }
 
     @Override
-    public ResponseWrapperDto getItem(long id) {
-        ResponseWrapperDto responseWrapperDto = null;
+    public ResponseWrapperDto<Optional<GoodsEntity>> getItem(long id) {
+        ResponseWrapperDto<Optional<GoodsEntity>> responseWrapperDto = null;
         Optional<GoodsEntity> isExisting = itemRepository.findByIdAndIsDeleted(id, false);
         if(!isExisting.isPresent()){
             throw new ItemNotFoundException();
         }
-        responseWrapperDto = new ResponseWrapperDto(true,"Get Item Successful" ,isExisting);
+        responseWrapperDto = new ResponseWrapperDto<>(true,"Get Item Successful" ,isExisting);
         return  responseWrapperDto;
     }
 
     @Override
-    public ResponseWrapperDto getAllItem(int categoryId, int size, int page) {
-        ResponseWrapperDto responseWrapperDto = null;
+    public ResponseWrapperDto<InventoryPaginationDto> getAllItem(int categoryId, int size, int page) {
+        ResponseWrapperDto<InventoryPaginationDto> responseWrapperDto;
 
         CategoryEntity itemCategory = new CategoryEntity();
         itemCategory.setId((long)categoryId);
 
         Pageable paging = PageRequest.of(page, size, Sort.by("name"));
         Page<GoodsEntityResponseDto> result = itemRepository.findGoodsEntities(itemCategory, false, paging);
-        InventoryPaginationDto inventoryPaginationDto = new InventoryPaginationDto(
+        InventoryPaginationDto inventoryPaginationDto = new InventoryPaginationDto<List<GoodsEntity>>(
                 result.getTotalElements(),
                 result.getTotalPages(),
                 size,
@@ -159,27 +161,26 @@ public class ItemServiceImpl implements ItemService{
             inventoryPaginationDto.setContent(result.getContent());
         }
 
-        responseWrapperDto = new ResponseWrapperDto(true, "Get All Items Successful", inventoryPaginationDto);
+        responseWrapperDto = new ResponseWrapperDto<>(true, "Get All Items Successful", inventoryPaginationDto);
         return responseWrapperDto;
     }
 
     @Override
-    public ResponseWrapperDto getUnitList() {
+    public ResponseWrapperDto<List<UnitsEntity>> getUnitList() {
         List<UnitsEntity> unitList = unitRepository.findAll();
-        ResponseWrapperDto responseWrapperDto = new ResponseWrapperDto(true,"success",unitList);
+        ResponseWrapperDto<List<UnitsEntity>> responseWrapperDto = new ResponseWrapperDto<>(true,"success",unitList);
         return responseWrapperDto;
     }
 
     @Override
-    public ResponseWrapperDto getItemCategoryList() {
+    public ResponseWrapperDto<List<CategoryEntity>> getItemCategoryList() {
         List<CategoryEntity> categoryList = itemCategoryRepository.findAll();
-        ResponseWrapperDto responseWrapperDto = new ResponseWrapperDto(true,"success",categoryList);
+        ResponseWrapperDto<List<CategoryEntity>> responseWrapperDto = new ResponseWrapperDto<>(true,"success",categoryList);
         return responseWrapperDto;
     }
 
     private LocalDate stringDateToLocalDateTime(String date){
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-        LocalDate localDate = LocalDate.parse(date, formatter);
-        return localDate;
+        return LocalDate.parse(date, formatter);
     }
 }

@@ -10,7 +10,7 @@ import java.io.Serializable;
 
 @Entity
 @Data
-@Table(name = "category", schema = "railway")
+@Table(name = "category")
 public class CategoryEntity implements Serializable {
     @Id
     @Column(name = "id", nullable = false)

@@ -29,21 +29,16 @@ public class ControllerAdvisor extends ResponseEntityExceptionHandler {
         return new ResponseEntity<>(responseWrapperDto, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
-    /*@ExceptionHandler(NoDataFoundException.class)
-    public ResponseEntity<Object> handleNodataFoundException(
-            NoDataFoundException ex, WebRequest request) {
-
-        Map<String, Object> body = new LinkedHashMap<>();
-        body.put("timestamp", LocalDateTime.now());
-        body.put("message", "No cities found");
-
-        return new ResponseEntity<>(body, HttpStatus.NOT_FOUND);
-    }*/
-
     @ExceptionHandler(RuntimeExceptionHere.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ResponseEntity<Object> runTimeExceptionHandling(RuntimeExceptionHere ex, WebRequest request) {
         ResponseWrapperDto responseWrapperDto = new ResponseWrapperDto(false, ex.getMessage(), null);
         return new ResponseEntity<>(responseWrapperDto, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @ExceptionHandler(InputNotValidException.class)
+    public ResponseEntity<Object> inputNotValidException(RuntimeExceptionHere ex, WebRequest request) {
+        ResponseWrapperDto responseWrapperDto = new ResponseWrapperDto(false, ex.getMessage(), null);
+        return new ResponseEntity<>(responseWrapperDto, HttpStatus.BAD_GATEWAY);
     }
 }

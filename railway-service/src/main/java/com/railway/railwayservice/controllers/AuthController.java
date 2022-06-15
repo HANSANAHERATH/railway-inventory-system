@@ -12,7 +12,8 @@ import com.railway.railwayservice.repository.RoleRepository;
 import com.railway.railwayservice.repository.UserDetailsRepository;
 import com.railway.railwayservice.security.JwtUtils;
 import com.railway.railwayservice.security.service.UserDetailsImpl;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.railway.railwayservice.service.AuthService;
+import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -30,109 +31,27 @@ import java.util.stream.Collectors;
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
 @RequestMapping("/api/auth")
+@AllArgsConstructor
 public class AuthController {
-    @Autowired
-    AuthenticationManager authenticationManager;
-
-    @Autowired
-    UserDetailsRepository userRepository;
-
-    @Autowired
-    RoleRepository roleRepository;
-
-    @Autowired
-    PasswordEncoder encoder;
-
-    @Autowired
-    JwtUtils jwtUtils;
-
-    @Autowired
-    BlackListTokenRepository blackListTokenRepository;
+    private final AuthService authService;
 
     @PostMapping("/signin")
-    public ResponseEntity<?> authenticateUser(@RequestBody LoginRequest loginRequest) {
-
-        Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
-
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-        String jwt = jwtUtils.generateJwtToken(authentication);
-
-        UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
-        List<String> roles = userDetails.getAuthorities().stream()
-                .map(item -> item.getAuthority())
-                .collect(Collectors.toList());
-
-        return ResponseEntity.ok(new JwtResponse(jwt,
-                userDetails.getId().toString(),
-                userDetails.getUsername(),
-                userDetails.getEmail(),
-                roles));
+    public ResponseEntity<JwtResponse> authenticateUser(@RequestBody LoginRequest loginRequest) {
+        return ResponseEntity.ok(authService.authenticateUser(loginRequest));
     }
 
     @PostMapping("/signup")
-    public ResponseEntity<?> registerUser(@RequestBody SignupRequest signUpRequest) {
-        if (userRepository.existsByUsername(signUpRequest.getUsername())) {
-            return ResponseEntity
-                    .badRequest()
-                    .body(new ResponseWrapperDto<>(false,"Username is already taken!",null));
-        }
-
-        if (userRepository.existsByEmail(signUpRequest.getEmail())) {
-            return ResponseEntity
-                    .badRequest()
-                    .body(new ResponseWrapperDto<>(false,"Email is already in use!",null));
-        }
-
-        // Create new user's account
-        UserDetails user = new UserDetails(signUpRequest.getUsername(),
-                signUpRequest.getEmail(),
-                encoder.encode(signUpRequest.getPassword()));
-
-        Set<String> strRoles = signUpRequest.getRole();
-        Set<Role> roles = new HashSet<>();
-
-        if (strRoles == null) {
-            Role userRole = roleRepository.findByName(ERole.ROLE_USER)
-                    .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-            roles.add(userRole);
-        } else {
-            strRoles.forEach(role -> {
-                switch (role) {
-                    case "admin":
-                        Role adminRole = roleRepository.findByName(ERole.ROLE_ADMIN)
-                                .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-                        roles.add(adminRole);
-
-                        break;
-                    case "mod":
-                        Role modRole = roleRepository.findByName(ERole.ROLE_MODERATOR)
-                                .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-                        roles.add(modRole);
-
-                        break;
-                    default:
-                        Role userRole = roleRepository.findByName(ERole.ROLE_USER)
-                                .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-                        roles.add(userRole);
-                }
-            });
-        }
-
-        user.setRoles(roles);
-        userRepository.save(user);
-
+    public ResponseEntity<ResponseWrapperDto> registerUser(@RequestBody SignupRequest signUpRequest) {
+        authService.registerUser(signUpRequest);
         return ResponseEntity.ok(new ResponseWrapperDto<>(true,"User registered successfully!",null));
     }
 
     @PostMapping("/signout")
     public ResponseEntity<?> signOut(@RequestBody LoginRequest loginRequest, @RequestHeader(value = "Authorization", required = true) String token) {
-        if (StringUtils.hasText(token) && token.startsWith("Bearer ")) {
-            String tokenWithoutBearer = token.substring(7);
-            String username = jwtUtils.getUserNameFromJwtToken(tokenWithoutBearer);
-            blackListTokenRepository.saveToken(username, tokenWithoutBearer);
-            return ResponseEntity.ok("Logged out user " + username);
+        String res = authService.signOut(loginRequest, token);
+        if(null != res){
+            return ResponseEntity.ok(res);
         }
-
         return ResponseEntity.internalServerError().body(null);
     }
 }
