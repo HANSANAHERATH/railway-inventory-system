@@ -50,7 +50,7 @@ class ItemRepositoryTest {
         inventoryEntity1.setUnitsEntity(unitsEntity);
         inventoryEntity1.setId(123L);
         inventoryEntity1.setHandoverTo("");
-        inventoryEntity1.setQuantity(100);
+        inventoryEntity1.setQuantity(100F);
         inventoryEntity1.setShedStoreNo("");
         inventoryEntity1.setSupervisorName("");
         inventoryEntity1.setTime(LocalTime.now());
@@ -62,7 +62,7 @@ class ItemRepositoryTest {
         inventoryEntity2.setUnitsEntity(unitsEntity);
         inventoryEntity2.setId(123L);
         inventoryEntity2.setHandoverTo("");
-        inventoryEntity2.setQuantity(100);
+        inventoryEntity2.setQuantity(100F);
         inventoryEntity2.setShedStoreNo("");
         inventoryEntity2.setSupervisorName("");
         inventoryEntity2.setTime(LocalTime.now());
@@ -76,13 +76,13 @@ class ItemRepositoryTest {
         goodsEntity.setCategoryEntity(categoryEntity);
         goodsEntity.setDate(LocalDate.now());
         goodsEntity.setInventoryEntity(inventoryEntities);
-        goodsEntity.setDeleted(false);
+        goodsEntity.setIsDeleted(false);
         goodsEntity.setUnitsEntity(unitsEntity);
         goodsEntity.setDescription("");
         goodsEntity.setId(123L);
-        goodsEntity.setMinQuantity(0);
+        goodsEntity.setMinQuantity(0F);
         goodsEntity.setName("");
-        goodsEntity.setTotalQuantity(1000);
+        goodsEntity.setTotalQuantity(1000F);
 
         itemRepository.save(goodsEntity);
 

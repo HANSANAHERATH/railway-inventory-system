@@ -4,6 +4,9 @@ import com.railway.railwayservice.entity.GoodsEntity;
 import com.railway.railwayservice.entity.UnitsEntity;
 import lombok.Data;
 
+/**
+ * The type Create inventory response dto.
+ */
 @Data
 public class CreateInventoryResponseDto {
     private Long id;
@@ -12,7 +15,7 @@ public class CreateInventoryResponseDto {
     private String reference;
     private String shedStoreNo;
     private String description;
-    private float quantity;
+    private Float quantity;
     private String supervisorName;
     private String handoverTo;
     private String additionalNote;

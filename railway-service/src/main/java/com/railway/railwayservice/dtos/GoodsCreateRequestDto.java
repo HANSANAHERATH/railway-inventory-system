@@ -6,16 +6,19 @@ import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
 
+/**
+ * The type Goods create request dto.
+ */
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 public class GoodsCreateRequestDto implements Serializable {
-    private long id;
+    private Long id;
     private String goodName;
     private String description;
-    private long unitId;
+    private Long unitId;
     private String date;
     private String userId;
-    private int category;
-    private float minQuantity;
+    private Integer category;
+    private Float minQuantity;
 }

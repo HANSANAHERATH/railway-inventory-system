@@ -8,6 +8,9 @@ import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
+/**
+ * The type Inventory entity.
+ */
 @Entity
 @Data
 @Table(name = "inventory")
@@ -21,7 +24,7 @@ public class InventoryEntity implements Serializable {
     private LocalTime time;
     private String shedStoreNo;
     private String description;
-    private float quantity;
+    private Float quantity;
     private String supervisorName;
     private String handoverTo;
 

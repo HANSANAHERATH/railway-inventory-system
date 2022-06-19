@@ -7,6 +7,9 @@ import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.Set;
 
+/**
+ * The type Goods entity.
+ */
 @Data
 @Entity
 @Table(name = "goods")
@@ -19,9 +22,9 @@ public class GoodsEntity implements Serializable {
     private String name;
     private String description;
     private LocalDate date;
-    private boolean isDeleted = false;
-    private float minQuantity = 0;
-    private float totalQuantity = 0;
+    private Boolean isDeleted = false;
+    private Float minQuantity = 0.0F;
+    private Float totalQuantity = 0.0F;
 
     @OneToOne(targetEntity = UnitsEntity.class)
     @JoinColumn(name = "unit", referencedColumnName = "id")

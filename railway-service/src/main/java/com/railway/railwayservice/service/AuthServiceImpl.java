@@ -27,6 +27,9 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+/**
+ * The type Auth service.
+ */
 @Service
 @AllArgsConstructor
 public class AuthServiceImpl implements AuthService {
@@ -65,11 +68,11 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public void registerUser(SignupRequest signUpRequest) {
         if (Boolean.TRUE.equals(userRepository.existsByUsername(signUpRequest.getUsername()))) {
-            throw new InputNotValidException(new ResponseWrapperDto<>(false,"Username is already taken!",null));
+            throw new InputNotValidException(new ResponseWrapperDto<>(false, "Username is already taken!", null));
         }
 
         if (Boolean.TRUE.equals(userRepository.existsByEmail(signUpRequest.getEmail()))) {
-            throw new InputNotValidException(new ResponseWrapperDto<>(false,"Email is already in use!",null));
+            throw new InputNotValidException(new ResponseWrapperDto<>(false, "Email is already in use!", null));
         }
 
         UserDetails user = new UserDetails(signUpRequest.getUsername(),

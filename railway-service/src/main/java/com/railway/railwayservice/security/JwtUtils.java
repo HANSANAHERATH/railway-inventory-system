@@ -12,6 +12,9 @@ import org.springframework.stereotype.Component;
 
 import java.util.Date;
 
+/**
+ * The type Jwt utils.
+ */
 @Component
 public class JwtUtils {
     private static final Logger logger = LoggerFactory.getLogger(JwtUtils.class);
@@ -25,6 +28,12 @@ public class JwtUtils {
     @Autowired
     private BlackListTokenRepository blackListTokenRepository;
 
+    /**
+     * Generate jwt token string.
+     *
+     * @param authentication the authentication
+     * @return the string
+     */
     public String generateJwtToken(Authentication authentication) {
 
         UserDetailsImpl userPrincipal = (UserDetailsImpl) authentication.getPrincipal();
@@ -37,10 +46,22 @@ public class JwtUtils {
                 .compact();
     }
 
+    /**
+     * Gets user name from jwt token.
+     *
+     * @param token the token
+     * @return the user name from jwt token
+     */
     public String getUserNameFromJwtToken(String token) {
         return Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(token).getBody().getSubject();
     }
 
+    /**
+     * Validate jwt token boolean.
+     *
+     * @param authToken the auth token
+     * @return the boolean
+     */
     public boolean validateJwtToken(String authToken) {
         try {
             Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(authToken);
@@ -60,6 +81,13 @@ public class JwtUtils {
         return false;
     }
 
+    /**
+     * Is black listed token boolean.
+     *
+     * @param username the username
+     * @param token    the token
+     * @return the boolean
+     */
     public boolean isBlackListedToken(String username, String token) {
         try {
             String redisToken = blackListTokenRepository.findTokenByUserName(username);

@@ -2,6 +2,9 @@ package com.railway.railwayservice.dtos;
 
 import lombok.Data;
 
+/**
+ * The type Get all inventory response dto.
+ */
 @Data
 public class GetAllInventoryResponseDto {
     private Long id;
@@ -10,7 +13,7 @@ public class GetAllInventoryResponseDto {
     private String reference;
     private String shedStoreNo;
     private String description;
-    private float quantity;
+    private Float quantity;
     private String supervisorName;
     private String handoverTo;
     private String additionalNote;

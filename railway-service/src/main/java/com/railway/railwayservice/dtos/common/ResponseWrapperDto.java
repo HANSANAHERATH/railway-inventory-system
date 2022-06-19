@@ -1,18 +1,18 @@
 package com.railway.railwayservice.dtos.common;
 
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
-@Data
+/**
+ * The type Response wrapper dto.
+ *
+ * @param <T> the type parameter
+ */
 @NoArgsConstructor
+@AllArgsConstructor
+@Getter
+@Setter
 public class ResponseWrapperDto<T> {
-    private boolean status;
+    private Boolean status;
     private String statusMessage;
     private T body;
-
-    public ResponseWrapperDto(boolean status, String statusMessage, T body){
-        this.status = status;
-        this.statusMessage = statusMessage;
-        this.body = body;
-    }
 }

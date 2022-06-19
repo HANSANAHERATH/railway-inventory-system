@@ -1,7 +1,15 @@
 package com.railway.railwayservice.Exceptions;
 
+/**
+ * The type Runtime exception here.
+ */
 public class RuntimeExceptionHere extends RuntimeException {
-    public RuntimeExceptionHere(Exception ex){
-        super(ex.getMessage());
+    /**
+     * Instantiates a new Runtime exception here.
+     *
+     * @param message the message
+     */
+    public RuntimeExceptionHere(String message){
+        super(message);
     }
 }

@@ -62,7 +62,7 @@ class ItemInventoryServiceImplTest {
                 .thenReturn(new ArrayList<>());
         ResponseWrapperDto actualItemLookup = this.itemInventoryServiceImpl.getItemLookup(1L);
         assertTrue(((Collection<Object>) actualItemLookup.getBody()).isEmpty());
-        assertTrue(actualItemLookup.isStatus());
+        assertTrue(actualItemLookup.getStatus());
         assertEquals("Fetch Success.", actualItemLookup.getStatusMessage());
         verify(this.itemRepository).findGoodsList((com.railway.railwayservice.entity.CategoryEntity) any(), anyBoolean());
     }
@@ -88,7 +88,7 @@ class ItemInventoryServiceImplTest {
         GoodsEntity goodsEntity = new GoodsEntity();
         goodsEntity.setCategoryEntity(categoryEntity);
         goodsEntity.setDate(LocalDate.ofEpochDay(1L));
-        goodsEntity.setDeleted(true);
+        goodsEntity.setIsDeleted(true);
         goodsEntity.setDescription("The characteristics of someone or something");
         goodsEntity.setId(123L);
         goodsEntity.setInventoryEntity(new HashSet<>());
@@ -110,7 +110,7 @@ class ItemInventoryServiceImplTest {
         GoodsEntity goodsEntity1 = new GoodsEntity();
         goodsEntity1.setCategoryEntity(categoryEntity1);
         goodsEntity1.setDate(LocalDate.ofEpochDay(1L));
-        goodsEntity1.setDeleted(true);
+        goodsEntity1.setIsDeleted(true);
         goodsEntity1.setDescription("The characteristics of someone or something");
         goodsEntity1.setId(123L);
         goodsEntity1.setInventoryEntity(new HashSet<>());
@@ -150,7 +150,7 @@ class ItemInventoryServiceImplTest {
         createInventoryDto.setTime("Time");
         ResponseWrapperDto actualCreateInventoryResult = this.itemInventoryServiceImpl.createInventory(createInventoryDto);
         assertNull(actualCreateInventoryResult.getBody());
-        assertTrue(actualCreateInventoryResult.isStatus());
+        assertTrue(actualCreateInventoryResult.getStatus());
         assertEquals("Create Success.", actualCreateInventoryResult.getStatusMessage());
         verify(this.itemRepository).findById((Long) any());
         verify(this.itemInventoryRepository).saveAndFlush((InventoryEntity) any());
@@ -169,7 +169,7 @@ class ItemInventoryServiceImplTest {
         GoodsEntity goodsEntity = new GoodsEntity();
         goodsEntity.setCategoryEntity(categoryEntity);
         goodsEntity.setDate(LocalDate.ofEpochDay(1L));
-        goodsEntity.setDeleted(true);
+        goodsEntity.setIsDeleted(true);
         goodsEntity.setDescription("The characteristics of someone or something");
         goodsEntity.setId(123L);
         goodsEntity.setInventoryEntity(new HashSet<>());
@@ -212,7 +212,7 @@ class ItemInventoryServiceImplTest {
         GoodsEntity goodsEntity = new GoodsEntity();
         goodsEntity.setCategoryEntity(categoryEntity);
         goodsEntity.setDate(LocalDate.ofEpochDay(1L));
-        goodsEntity.setDeleted(true);
+        goodsEntity.setIsDeleted(true);
         goodsEntity.setDescription("The characteristics of someone or something");
         goodsEntity.setId(123L);
         goodsEntity.setInventoryEntity(new HashSet<>());
@@ -267,7 +267,7 @@ class ItemInventoryServiceImplTest {
         GoodsEntity goodsEntity = new GoodsEntity();
         goodsEntity.setCategoryEntity(categoryEntity);
         goodsEntity.setDate(LocalDate.ofEpochDay(1L));
-        goodsEntity.setDeleted(true);
+        goodsEntity.setIsDeleted(true);
         goodsEntity.setDescription("The characteristics of someone or something");
         goodsEntity.setId(123L);
         goodsEntity.setInventoryEntity(new HashSet<>());
@@ -289,7 +289,7 @@ class ItemInventoryServiceImplTest {
         GoodsEntity goodsEntity1 = new GoodsEntity();
         goodsEntity1.setCategoryEntity(categoryEntity1);
         goodsEntity1.setDate(LocalDate.ofEpochDay(1L));
-        goodsEntity1.setDeleted(true);
+        goodsEntity1.setIsDeleted(true);
         goodsEntity1.setDescription("The characteristics of someone or something");
         goodsEntity1.setId(123L);
         goodsEntity1.setInventoryEntity(new HashSet<>());
@@ -372,7 +372,7 @@ class ItemInventoryServiceImplTest {
                 "ResponseWrapperDto(status=true, statusMessage=Fetch Success., body=InventoryPaginationDto(totalCount=0,"
                         + " totalPage=1, pageSize=3, page=1, content=[]))",
                 actualAllInventory.toString());
-        assertTrue(actualAllInventory.isStatus());
+        assertTrue(actualAllInventory.getStatus());
         assertEquals("Fetch Success.", actualAllInventory.getStatusMessage());
         assertEquals(1, ((InventoryPaginationDto) actualAllInventory.getBody()).getTotalPage());
         assertEquals(0L, ((InventoryPaginationDto) actualAllInventory.getBody()).getTotalCount());
@@ -394,7 +394,7 @@ class ItemInventoryServiceImplTest {
                 "ResponseWrapperDto(status=true, statusMessage=Fetch Success., body=InventoryPaginationDto(totalCount=0,"
                         + " totalPage=1, pageSize=3, page=1, content=[]))",
                 actualAllInventory.toString());
-        assertTrue(actualAllInventory.isStatus());
+        assertTrue(actualAllInventory.getStatus());
         assertEquals("Fetch Success.", actualAllInventory.getStatusMessage());
         assertEquals(1, ((InventoryPaginationDto) actualAllInventory.getBody()).getTotalPage());
         assertEquals(0L, ((InventoryPaginationDto) actualAllInventory.getBody()).getTotalCount());
@@ -416,7 +416,7 @@ class ItemInventoryServiceImplTest {
                 "ResponseWrapperDto(status=true, statusMessage=Fetch Success., body=InventoryPaginationDto(totalCount=0,"
                         + " totalPage=1, pageSize=3, page=1, content=[]))",
                 actualAllInventory.toString());
-        assertTrue(actualAllInventory.isStatus());
+        assertTrue(actualAllInventory.getStatus());
         assertEquals("Fetch Success.", actualAllInventory.getStatusMessage());
         assertEquals(1, ((InventoryPaginationDto) actualAllInventory.getBody()).getTotalPage());
         assertEquals(0L, ((InventoryPaginationDto) actualAllInventory.getBody()).getTotalCount());
@@ -439,7 +439,7 @@ class ItemInventoryServiceImplTest {
 
     @Test
     void testConstructor() {
-        assertNull((new ItemInventoryServiceImpl()).getItemAll());
+        assertNull((new ItemInventoryServiceImpl(itemRepository,itemInventoryRepository)).getItemAll());
     }
 }
 

@@ -5,6 +5,9 @@ import lombok.Data;
 
 import java.util.Set;
 
+/**
+ * The type Signup request.
+ */
 @Data
 @AllArgsConstructor
 public class SignupRequest {

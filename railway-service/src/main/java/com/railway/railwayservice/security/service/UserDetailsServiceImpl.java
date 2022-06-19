@@ -1,17 +1,21 @@
 package com.railway.railwayservice.security.service;
 
 import com.railway.railwayservice.repository.UserDetailsRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.AllArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+/**
+ * The type User details service.
+ */
 @Service
+@AllArgsConstructor
 public class UserDetailsServiceImpl implements UserDetailsService {
-    @Autowired
-    UserDetailsRepository userRepository;
+
+    private final UserDetailsRepository userRepository;
 
     @Override
     @Transactional

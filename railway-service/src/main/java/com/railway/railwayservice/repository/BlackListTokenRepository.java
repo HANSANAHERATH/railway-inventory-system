@@ -7,6 +7,9 @@ import org.springframework.stereotype.Repository;
 
 import javax.annotation.PostConstruct;
 
+/**
+ * The type Black list token repository.
+ */
 @Repository
 @RequiredArgsConstructor
 public class BlackListTokenRepository {
@@ -21,10 +24,22 @@ public class BlackListTokenRepository {
         hashOperations = redisTemplate.opsForHash();
     }
 
+    /**
+     * Find token by user name string.
+     *
+     * @param username the username
+     * @return the string
+     */
     public String findTokenByUserName(String username) {
         return hashOperations.get(REDIS_ENTITY, username);
     }
 
+    /**
+     * Save token.
+     *
+     * @param username the username
+     * @param token    the token
+     */
     public void saveToken(String username,String token) {
         hashOperations.put(REDIS_ENTITY, username, token);
     }

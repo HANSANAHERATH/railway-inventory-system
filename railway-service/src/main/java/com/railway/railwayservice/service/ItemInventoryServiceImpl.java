@@ -1,9 +1,7 @@
 package com.railway.railwayservice.service;
 
-import com.railway.railwayservice.Exceptions.ItemCountDecrementException;
 import com.railway.railwayservice.Exceptions.ItemNotFoundException;
 import com.railway.railwayservice.Exceptions.ItemQuantityException;
-import com.railway.railwayservice.Exceptions.RuntimeExceptionHere;
 import com.railway.railwayservice.dtos.*;
 import com.railway.railwayservice.dtos.common.ResponseWrapperDto;
 import com.railway.railwayservice.entity.CategoryEntity;
@@ -13,11 +11,10 @@ import com.railway.railwayservice.enums.InventoryFilter;
 import com.railway.railwayservice.enums.InventoryType;
 import com.railway.railwayservice.repository.ItemInventoryRepository;
 import com.railway.railwayservice.repository.ItemRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -27,15 +24,17 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * The type Item inventory service.
+ */
 @Service
 @Transactional
+@AllArgsConstructor
 public class ItemInventoryServiceImpl implements ItemInventory {
 
-    @Autowired
-    private ItemRepository itemRepository;
+    private final ItemRepository itemRepository;
 
-    @Autowired
-    private ItemInventoryRepository itemInventoryRepository;
+    private final ItemInventoryRepository itemInventoryRepository;
 
     @Override
     public ResponseWrapperDto getItemAll() {
@@ -43,7 +42,7 @@ public class ItemInventoryServiceImpl implements ItemInventory {
     }
 
     @Override
-    public ResponseWrapperDto getItemLookup(long category) throws RuntimeExceptionHere {
+    public ResponseWrapperDto getItemLookup(long category) {
         CategoryEntity itemCategory = new CategoryEntity();
         itemCategory.setId(category);
         List<GoodNameLookupResponseDto> goodNameLookupResponseDtos = itemRepository.findGoodsList(itemCategory, false);
@@ -53,7 +52,7 @@ public class ItemInventoryServiceImpl implements ItemInventory {
 
     @Override
     @Transactional
-    public ResponseWrapperDto createInventory(CreateInventoryDto createInventoryDto) throws ItemNotFoundException, ItemCountDecrementException, ItemQuantityException {
+    public ResponseWrapperDto createInventory(CreateInventoryDto createInventoryDto) {
         Optional<GoodsEntity> existingGoodsEntity = itemRepository.findById(createInventoryDto.getGoodsId());
         if (!existingGoodsEntity.isPresent()) {
             throw new ItemNotFoundException();
@@ -61,11 +60,11 @@ public class ItemInventoryServiceImpl implements ItemInventory {
 
         InventoryEntity inventoryEntity = new InventoryEntity();
 
-        if(createInventoryDto.getInventoryType().equals(InventoryType.GOODS_IN)){
+        if (createInventoryDto.getInventoryType().equals(InventoryType.GOODS_IN)) {
             inventoryEntity.setInventoryType(InventoryType.GOODS_IN);
             float total = existingGoodsEntity.get().getTotalQuantity() + createInventoryDto.getQuantity();
             existingGoodsEntity.get().setTotalQuantity(total);
-        }else {
+        } else {
             inventoryEntity.setInventoryType(InventoryType.GOODS_OUT);
             if (existingGoodsEntity.get().getTotalQuantity() < createInventoryDto.getQuantity()) {
                 throw new ItemQuantityException();
@@ -90,34 +89,34 @@ public class ItemInventoryServiceImpl implements ItemInventory {
     }
 
     @Override
-    public ResponseWrapperDto getAllInventory(Long id, InventoryFilter inventoryFilter, int page, int size) throws RuntimeExceptionHere {
+    public ResponseWrapperDto getAllInventory(Long id, InventoryFilter inventoryFilter, int page, int size) {
         List<String> inventoryTypes = new ArrayList<>();
-        if(inventoryFilter.equals(InventoryFilter.ALL)){
+        if (inventoryFilter.equals(InventoryFilter.ALL)) {
             inventoryTypes.add(InventoryType.GOODS_IN.toString());
             inventoryTypes.add(InventoryType.GOODS_OUT.toString());
-        }else {
+        } else {
             if (inventoryFilter.equals(InventoryFilter.IN))
                 inventoryTypes.add(InventoryType.GOODS_IN.toString());
             else
                 inventoryTypes.add(InventoryType.GOODS_OUT.toString());
         }
         Pageable paging = PageRequest.of(page, size);
-        Page<InventoryResponseDto> result = itemInventoryRepository.findAllByInventory(id, false,inventoryTypes, paging);
+        Page<InventoryResponseDto> result = itemInventoryRepository.findAllByInventory(id, false, inventoryTypes, paging);
         InventoryPaginationDto inventoryPaginationDto = new InventoryPaginationDto(
                 result.getTotalElements(),
                 result.getTotalPages(),
                 size,
                 page,
                 new ArrayList<InventoryEntity>());
-        if(result.hasContent()) {
+        if (result.hasContent()) {
             inventoryPaginationDto.setContent(result.getContent());
         }
-       // List<InventoryResponseDto> list = itemInventoryRepository.findAllByInventory(id, false, inventoryTypes);
+        // List<InventoryResponseDto> list = itemInventoryRepository.findAllByInventory(id, false, inventoryTypes);
         ResponseWrapperDto responseWrapperDto = new ResponseWrapperDto(true, "Fetch Success.", inventoryPaginationDto);
         return responseWrapperDto;
     }
-    
-    private BalanceDto getBalance(Long id) throws ItemQuantityException{
+
+    private BalanceDto getBalance(Long id) {
        /* Optional<ItemsEntity> entity = itemRepository.findByIdAndIsDeleted(id, false);
         if(!entity.isPresent()){
             throw new ItemNotFoundException();

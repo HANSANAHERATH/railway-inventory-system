@@ -5,6 +5,9 @@ import lombok.Data;
 
 import javax.persistence.Enumerated;
 
+/**
+ * The type Create inventory dto.
+ */
 @Data
 public class CreateInventoryDto {
     private Long id;
@@ -12,7 +15,7 @@ public class CreateInventoryDto {
     private String time;
     private String shedStoreNo;
     private String description;
-    private float quantity;
+    private Float quantity;
     private String supervisorName;
     private String handoverTo;
     private Long goodsId;

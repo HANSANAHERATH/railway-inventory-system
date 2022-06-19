@@ -6,6 +6,9 @@ import lombok.Data;
 import javax.persistence.*;
 import java.io.Serializable;
 
+/**
+ * The type Role.
+ */
 @Entity
 @Data
 @Table(name = "roles")
@@ -20,5 +23,9 @@ public class Role implements Serializable {
     @Column(length = 20)
     private ERole name;
 
-    public Role(){}
+    /**
+     * Instantiates a new Role.
+     */
+    public Role() {
+    }
 }
