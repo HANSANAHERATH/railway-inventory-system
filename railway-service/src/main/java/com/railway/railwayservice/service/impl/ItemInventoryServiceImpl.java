@@ -1,4 +1,4 @@
-package com.railway.railwayservice.service;
+package com.railway.railwayservice.service.impl;
 
 import com.railway.railwayservice.Exceptions.ItemNotFoundException;
 import com.railway.railwayservice.Exceptions.ItemQuantityException;
@@ -18,6 +18,7 @@ import com.railway.railwayservice.mappers.InventoryMapper;
 import com.railway.railwayservice.repository.ItemCategoryRepository;
 import com.railway.railwayservice.repository.ItemInventoryRepository;
 import com.railway.railwayservice.repository.ItemRepository;
+import com.railway.railwayservice.service.ItemInventory;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -115,7 +116,7 @@ public class ItemInventoryServiceImpl implements ItemInventory {
         }
         Pageable paging = PageRequest.of(page, size);
         Page<InventoryResponseDto> result = itemInventoryRepository.findAllByInventory(id, ActiveStatus.INACTIVE.getValue(), inventoryTypes, paging);
-        InventoryPaginationDto<List<InventoryResponseDto>> inventoryPaginationDto = new InventoryPaginationDto(
+        InventoryPaginationDto<List<InventoryResponseDto>> inventoryPaginationDto = new InventoryPaginationDto<>(
                 result.getTotalElements(),
                 result.getTotalPages(),
                 size,

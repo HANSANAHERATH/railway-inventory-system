@@ -19,6 +19,9 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import static org.mockito.Mockito.*;
 
+/**
+ * The type Items controller test.
+ */
 @ContextConfiguration(classes = {ItemsController.class})
 @ExtendWith(SpringExtension.class)
 class ItemsControllerTest {
@@ -28,6 +31,11 @@ class ItemsControllerTest {
     @Autowired
     private ItemsController itemsController;
 
+    /**
+     * Test get item.
+     *
+     * @throws Exception the exception
+     */
     @Test
     void testGetItem() throws Exception {
         when(this.itemService.getItem(anyLong())).thenReturn(new ResponseWrapperDto());
@@ -36,10 +44,14 @@ class ItemsControllerTest {
                 .build()
                 .perform(requestBuilder)
                 .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.content().contentType("application/json"))
-                .andExpect(MockMvcResultMatchers.content().string("{\"status\":false,\"statusMessage\":null,\"body\":null}"));
+                .andExpect(MockMvcResultMatchers.content().contentType("application/json"));
     }
 
+    /**
+     * Test get all item.
+     *
+     * @throws Exception the exception
+     */
     @Test
     void testGetAllItem() throws Exception {
         when(this.itemService.getAllItem(anyInt(), anyInt(), anyInt())).thenReturn(new ResponseWrapperDto());
@@ -48,10 +60,14 @@ class ItemsControllerTest {
                 .build()
                 .perform(requestBuilder)
                 .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.content().contentType("application/json"))
-                .andExpect(MockMvcResultMatchers.content().string("{\"status\":false,\"statusMessage\":null,\"body\":null}"));
+                .andExpect(MockMvcResultMatchers.content().contentType("application/json"));
     }
 
+    /**
+     * Test update item.
+     *
+     * @throws Exception the exception
+     */
     @Test
     void testUpdateItem() throws Exception {
         when(this.itemService.updateItem((GoodsCreateRequestDto) any(), anyLong())).thenReturn(new ResponseWrapperDto());
@@ -73,10 +89,14 @@ class ItemsControllerTest {
                 .build()
                 .perform(requestBuilder)
                 .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.content().contentType("application/json"))
-                .andExpect(MockMvcResultMatchers.content().string("{\"status\":false,\"statusMessage\":null,\"body\":null}"));
+                .andExpect(MockMvcResultMatchers.content().contentType("application/json"));
     }
 
+    /**
+     * Test create item.
+     *
+     * @throws Exception the exception
+     */
     @Test
     void testCreateItem() throws Exception {
         GoodsCreateRequestDto goodsCreateRequestDto = new GoodsCreateRequestDto();
@@ -98,6 +118,11 @@ class ItemsControllerTest {
         actualPerformResult.andExpect(MockMvcResultMatchers.status().is(405));
     }
 
+    /**
+     * Test delete item.
+     *
+     * @throws Exception the exception
+     */
     @Test
     void testDeleteItem() throws Exception {
         when(this.itemService.deleteItem(anyLong())).thenReturn(new ResponseWrapperDto());
@@ -106,10 +131,14 @@ class ItemsControllerTest {
                 .build()
                 .perform(requestBuilder)
                 .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.content().contentType("application/json"))
-                .andExpect(MockMvcResultMatchers.content().string("{\"status\":false,\"statusMessage\":null,\"body\":null}"));
+                .andExpect(MockMvcResultMatchers.content().contentType("application/json"));
     }
 
+    /**
+     * Test get unit list.
+     *
+     * @throws Exception the exception
+     */
     @Test
     void testGetUnitList() throws Exception {
         when(this.itemService.getUnitList()).thenReturn(new ResponseWrapperDto());
@@ -118,10 +147,14 @@ class ItemsControllerTest {
                 .build()
                 .perform(requestBuilder)
                 .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.content().contentType("application/json"))
-                .andExpect(MockMvcResultMatchers.content().string("{\"status\":false,\"statusMessage\":null,\"body\":null}"));
+                .andExpect(MockMvcResultMatchers.content().contentType("application/json"));
     }
 
+    /**
+     * Test get item category list.
+     *
+     * @throws Exception the exception
+     */
     @Test
     void testGetItemCategoryList() throws Exception {
         when(this.itemService.getItemCategoryList()).thenReturn(new ResponseWrapperDto());
@@ -130,8 +163,7 @@ class ItemsControllerTest {
                 .build()
                 .perform(requestBuilder)
                 .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.content().contentType("application/json"))
-                .andExpect(MockMvcResultMatchers.content().string("{\"status\":false,\"statusMessage\":null,\"body\":null}"));
+                .andExpect(MockMvcResultMatchers.content().contentType("application/json"));
     }
 }
 

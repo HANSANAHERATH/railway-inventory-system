@@ -1,4 +1,4 @@
-package com.railway.railwayservice.service;
+package com.railway.railwayservice.service.impl;
 
 import com.railway.railwayservice.Exceptions.ItemAllReadyExistingException;
 import com.railway.railwayservice.Exceptions.ItemNotFoundException;
@@ -15,6 +15,7 @@ import com.railway.railwayservice.mappers.GoodsMapper;
 import com.railway.railwayservice.repository.ItemCategoryRepository;
 import com.railway.railwayservice.repository.ItemRepository;
 import com.railway.railwayservice.repository.UnitRepository;
+import com.railway.railwayservice.service.ItemService;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;

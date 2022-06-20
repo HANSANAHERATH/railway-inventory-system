@@ -1,4 +1,4 @@
-package com.railway.railwayservice.service;
+package com.railway.railwayservice.service.impl;
 
 import com.railway.railwayservice.Exceptions.InputNotValidException;
 import com.railway.railwayservice.dtos.JwtResponse;
@@ -13,6 +13,7 @@ import com.railway.railwayservice.repository.RoleRepository;
 import com.railway.railwayservice.repository.UserDetailsRepository;
 import com.railway.railwayservice.security.JwtUtils;
 import com.railway.railwayservice.security.service.UserDetailsImpl;
+import com.railway.railwayservice.service.AuthService;
 import lombok.AllArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -35,15 +36,10 @@ import java.util.stream.Collectors;
 public class AuthServiceImpl implements AuthService {
 
     private final AuthenticationManager authenticationManager;
-
     private final JwtUtils jwtUtils;
-
     private final UserDetailsRepository userRepository;
-
     private final RoleRepository roleRepository;
-
     private final PasswordEncoder encoder;
-
     private final BlackListTokenRepository blackListTokenRepository;
 
     @Override
