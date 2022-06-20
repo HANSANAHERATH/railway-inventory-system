@@ -3,8 +3,6 @@ package com.railway.railwayservice.dtos;
 import com.railway.railwayservice.enums.InventoryType;
 import lombok.Data;
 
-import javax.persistence.Enumerated;
-
 /**
  * The type Create inventory dto.
  */

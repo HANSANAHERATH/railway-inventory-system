@@ -52,6 +52,7 @@ public class ItemServiceImpl implements ItemService {
     private static final String DATE_PATTERN = "yyyy-MM-dd";
     private static final String GET_ITEM_FAILED = "Get Item Failed.";
     private static final String UPDATE_FAILED = "Update Failed";
+    private static final String GOOD_NOT_FOUND = "Goods can not found.";
 
     private final ItemRepository itemRepository;
     private final UnitRepository unitRepository;
@@ -100,7 +101,7 @@ public class ItemServiceImpl implements ItemService {
         }
         Optional<GoodsEntity> isExistingGood = itemRepository.findByIdAndIsDeleted(id, ActiveStatus.INACTIVE.getValue());
         if (!isExistingGood.isPresent()) {
-            throw new ItemNotFoundException();
+            throw new ItemNotFoundException(GOOD_NOT_FOUND);
         }
 
         UnitsEntity unitsEntity = new UnitsEntity();
@@ -123,7 +124,7 @@ public class ItemServiceImpl implements ItemService {
         ResponseWrapperDto<GoodsEntity> responseWrapperDto;
         Optional<GoodsEntity> isExistingGood = itemRepository.findByIdAndIsDeleted(id, ActiveStatus.INACTIVE.getValue());
         if (!isExistingGood.isPresent()) {
-            throw new ItemNotFoundException();
+            throw new ItemNotFoundException(GOOD_NOT_FOUND);
         }
         isExistingGood.get().setIsDeleted(ActiveStatus.ACTIVE.getValue());
         GoodsEntity response = itemRepository.saveAndFlush(isExistingGood.get());
@@ -136,7 +137,7 @@ public class ItemServiceImpl implements ItemService {
         ResponseWrapperDto<GoodsEntity> responseWrapperDto = new ResponseWrapperDto<>(ActiveStatus.INACTIVE.getValue(), GET_ITEM_FAILED, null);
         Optional<GoodsEntity> isExisting = itemRepository.findByIdAndIsDeleted(id, ActiveStatus.INACTIVE.getValue());
         if (!isExisting.isPresent()) {
-            throw new ItemNotFoundException();
+            throw new ItemNotFoundException(GOOD_NOT_FOUND);
         }
         responseWrapperDto = new ResponseWrapperDto<>(ActiveStatus.ACTIVE.getValue(), GET_ITEM_SUCCESS, isExisting.get());
         return responseWrapperDto;

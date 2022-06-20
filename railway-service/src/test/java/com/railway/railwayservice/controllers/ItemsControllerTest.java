@@ -1,10 +1,5 @@
 package com.railway.railwayservice.controllers;
 
-import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.anyInt;
-import static org.mockito.Mockito.anyLong;
-import static org.mockito.Mockito.when;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.railway.railwayservice.dtos.GoodsCreateRequestDto;
 import com.railway.railwayservice.dtos.common.ResponseWrapperDto;
@@ -21,6 +16,8 @@ import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilde
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+
+import static org.mockito.Mockito.*;
 
 @ContextConfiguration(classes = {ItemsController.class})
 @ExtendWith(SpringExtension.class)

@@ -1,19 +1,18 @@
 package com.railway.railwayservice.service;
 
 import com.railway.railwayservice.dtos.CreateInventoryDto;
+import com.railway.railwayservice.dtos.GoodNameLookupResponseDto;
+import com.railway.railwayservice.dtos.InventoryPaginationDto;
+import com.railway.railwayservice.dtos.InventoryResponseDto;
 import com.railway.railwayservice.dtos.common.ResponseWrapperDto;
 import com.railway.railwayservice.enums.InventoryFilter;
+
+import java.util.List;
 
 /**
  * The interface Item inventory.
  */
 public interface ItemInventory {
-    /**
-     * Gets item all.
-     *
-     * @return the item all
-     */
-    ResponseWrapperDto getItemAll();
 
     /**
      * Gets item lookup.
@@ -21,7 +20,7 @@ public interface ItemInventory {
      * @param category the category
      * @return the item lookup
      */
-    ResponseWrapperDto getItemLookup(long category);
+    ResponseWrapperDto<List<GoodNameLookupResponseDto>> getItemLookup(Long category);
 
     /**
      * Create inventory response wrapper dto.
@@ -29,7 +28,7 @@ public interface ItemInventory {
      * @param createInventoryDto the create inventory dto
      * @return the response wrapper dto
      */
-    ResponseWrapperDto createInventory(CreateInventoryDto createInventoryDto);
+    ResponseWrapperDto<CreateInventoryDto> createInventory(CreateInventoryDto createInventoryDto);
 
     /**
      * Gets all inventory.
@@ -40,5 +39,5 @@ public interface ItemInventory {
      * @param size            the size
      * @return the all inventory
      */
-    ResponseWrapperDto getAllInventory(Long id, InventoryFilter inventoryFilter, int page, int size);
+    ResponseWrapperDto<InventoryPaginationDto<List<InventoryResponseDto>>> getAllInventory(Long id, InventoryFilter inventoryFilter, Integer page, Integer size);
 }

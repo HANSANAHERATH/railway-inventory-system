@@ -1,17 +1,5 @@
 package com.railway.railwayservice.service;//package com.railway.railwayservice.service;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.anyBoolean;
-import static org.mockito.Mockito.anyFloat;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
 import com.railway.railwayservice.Exceptions.ItemCountDecrementException;
 import com.railway.railwayservice.Exceptions.ItemNotFoundException;
 import com.railway.railwayservice.Exceptions.ItemQuantityException;
@@ -26,8 +14,16 @@ import com.railway.railwayservice.entity.InventoryEntity;
 import com.railway.railwayservice.entity.UnitsEntity;
 import com.railway.railwayservice.enums.InventoryFilter;
 import com.railway.railwayservice.enums.InventoryType;
+import com.railway.railwayservice.mappers.InventoryMapper;
 import com.railway.railwayservice.repository.ItemInventoryRepository;
 import com.railway.railwayservice.repository.ItemRepository;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -36,13 +32,8 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Optional;
 
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 @ContextConfiguration(classes = {ItemInventoryServiceImpl.class})
 @ExtendWith(SpringExtension.class)
@@ -55,6 +46,9 @@ class ItemInventoryServiceImplTest {
 
     @MockBean
     private ItemRepository itemRepository;
+
+    @MockBean
+    private InventoryMapper inventoryMapper;
 
     @Test
     void testGetItemLookup() throws RuntimeExceptionHere {
@@ -70,7 +64,7 @@ class ItemInventoryServiceImplTest {
     @Test
     void testGetItemLookup2() throws RuntimeExceptionHere {
         when(this.itemRepository.findGoodsList((com.railway.railwayservice.entity.CategoryEntity) any(), anyBoolean()))
-                .thenThrow(new ItemNotFoundException());
+                .thenThrow(new ItemNotFoundException(""));
         assertThrows(ItemNotFoundException.class, () -> this.itemInventoryServiceImpl.getItemLookup(1L));
         verify(this.itemRepository).findGoodsList((com.railway.railwayservice.entity.CategoryEntity) any(), anyBoolean());
     }
@@ -179,7 +173,7 @@ class ItemInventoryServiceImplTest {
         goodsEntity.setUnitsEntity(unitsEntity);
         Optional<GoodsEntity> ofResult = Optional.of(goodsEntity);
         when(this.itemRepository.findById((Long) any())).thenReturn(ofResult);
-        when(this.itemInventoryRepository.saveAndFlush((InventoryEntity) any())).thenThrow(new ItemNotFoundException());
+        when(this.itemInventoryRepository.saveAndFlush((InventoryEntity) any())).thenThrow(new ItemNotFoundException(""));
 
         CreateInventoryDto createInventoryDto = new CreateInventoryDto();
         createInventoryDto.setDate("2020-03-01");
@@ -430,16 +424,11 @@ class ItemInventoryServiceImplTest {
     @Test
     void testGetAllInventory4() throws RuntimeExceptionHere {
         when(this.itemInventoryRepository.findAllByInventory((Long) any(), anyBoolean(), (java.util.List<String>) any(),
-                (org.springframework.data.domain.Pageable) any())).thenThrow(new ItemNotFoundException());
+                (org.springframework.data.domain.Pageable) any())).thenThrow(new ItemNotFoundException(""));
         assertThrows(ItemNotFoundException.class,
                 () -> this.itemInventoryServiceImpl.getAllInventory(123L, InventoryFilter.IN, 1, 3));
         verify(this.itemInventoryRepository).findAllByInventory((Long) any(), anyBoolean(), (java.util.List<String>) any(),
                 (org.springframework.data.domain.Pageable) any());
-    }
-
-    @Test
-    void testConstructor() {
-        assertNull((new ItemInventoryServiceImpl(itemRepository,itemInventoryRepository)).getItemAll());
     }
 }
 

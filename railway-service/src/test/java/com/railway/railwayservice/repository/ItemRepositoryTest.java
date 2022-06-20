@@ -6,8 +6,6 @@ import com.railway.railwayservice.entity.GoodsEntity;
 import com.railway.railwayservice.entity.InventoryEntity;
 import com.railway.railwayservice.entity.UnitsEntity;
 import com.railway.railwayservice.enums.InventoryType;
-import org.hibernate.annotations.SQLInsert;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
@@ -19,9 +17,7 @@ import org.springframework.test.context.jdbc.Sql;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;

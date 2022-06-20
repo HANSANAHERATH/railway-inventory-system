@@ -2,13 +2,20 @@ package com.railway.railwayservice.service;
 
 import com.railway.railwayservice.Exceptions.ItemNotFoundException;
 import com.railway.railwayservice.Exceptions.ItemQuantityException;
-import com.railway.railwayservice.dtos.*;
+import com.railway.railwayservice.Exceptions.RuntimeExceptionHere;
+import com.railway.railwayservice.dtos.CreateInventoryDto;
+import com.railway.railwayservice.dtos.GoodNameLookupResponseDto;
+import com.railway.railwayservice.dtos.InventoryPaginationDto;
+import com.railway.railwayservice.dtos.InventoryResponseDto;
 import com.railway.railwayservice.dtos.common.ResponseWrapperDto;
 import com.railway.railwayservice.entity.CategoryEntity;
 import com.railway.railwayservice.entity.GoodsEntity;
 import com.railway.railwayservice.entity.InventoryEntity;
+import com.railway.railwayservice.enums.ActiveStatus;
 import com.railway.railwayservice.enums.InventoryFilter;
 import com.railway.railwayservice.enums.InventoryType;
+import com.railway.railwayservice.mappers.InventoryMapper;
+import com.railway.railwayservice.repository.ItemCategoryRepository;
 import com.railway.railwayservice.repository.ItemInventoryRepository;
 import com.railway.railwayservice.repository.ItemRepository;
 import lombok.AllArgsConstructor;
@@ -32,65 +39,71 @@ import java.util.Optional;
 @AllArgsConstructor
 public class ItemInventoryServiceImpl implements ItemInventory {
 
+    private static final String FETCH_SUCCESS = "Fetch Success.";
+    private static final String CREATE_SUCCESS = "Create Success.";
+    private static final String CATEGORY_NOT_FOUND = "Can not found category.";
+    private static final String ID_NOT_NULL_ERROR = "Id should be null.";
+    private static final String GOOD_NOT_FOUND = "Can not find goods.";
+
     private final ItemRepository itemRepository;
-
     private final ItemInventoryRepository itemInventoryRepository;
+    private final InventoryMapper inventoryMapper;
+    private final ItemCategoryRepository itemCategoryRepository;
 
     @Override
-    public ResponseWrapperDto getItemAll() {
-        return null;
-    }
+    public ResponseWrapperDto<List<GoodNameLookupResponseDto>> getItemLookup(Long category) {
+        Optional<CategoryEntity> existingCategory = itemCategoryRepository.findById(category);
 
-    @Override
-    public ResponseWrapperDto getItemLookup(long category) {
+        if(!existingCategory.isPresent()){
+            throw new RuntimeExceptionHere(CATEGORY_NOT_FOUND);
+        }
         CategoryEntity itemCategory = new CategoryEntity();
         itemCategory.setId(category);
-        List<GoodNameLookupResponseDto> goodNameLookupResponseDtos = itemRepository.findGoodsList(itemCategory, false);
-        ResponseWrapperDto responseWrapperDto = new ResponseWrapperDto(true, "Fetch Success.", goodNameLookupResponseDtos);
-        return responseWrapperDto;
+        List<GoodNameLookupResponseDto> goodNameLookupResponseDtos = itemRepository.findGoodsList(itemCategory, ActiveStatus.INACTIVE.getValue());
+        return new ResponseWrapperDto<>(ActiveStatus.ACTIVE.getValue(), FETCH_SUCCESS, goodNameLookupResponseDtos);
     }
 
     @Override
-    @Transactional
-    public ResponseWrapperDto createInventory(CreateInventoryDto createInventoryDto) {
-        Optional<GoodsEntity> existingGoodsEntity = itemRepository.findById(createInventoryDto.getGoodsId());
-        if (!existingGoodsEntity.isPresent()) {
-            throw new ItemNotFoundException();
+    public ResponseWrapperDto<CreateInventoryDto> createInventory(CreateInventoryDto createInventoryDto) {
+        if (null != createInventoryDto.getId()) {
+            throw new RuntimeExceptionHere(ID_NOT_NULL_ERROR);
         }
 
-        InventoryEntity inventoryEntity = new InventoryEntity();
+        Optional<GoodsEntity> existingGoodsEntity = itemRepository.findById(createInventoryDto.getGoodsId());
+        if (!existingGoodsEntity.isPresent()) {
+            throw new ItemNotFoundException(GOOD_NOT_FOUND);
+        }
+
+        InventoryEntity inventoryEntity = inventoryMapper.toEntity(createInventoryDto);
 
         if (createInventoryDto.getInventoryType().equals(InventoryType.GOODS_IN)) {
             inventoryEntity.setInventoryType(InventoryType.GOODS_IN);
-            float total = existingGoodsEntity.get().getTotalQuantity() + createInventoryDto.getQuantity();
+            Float total = existingGoodsEntity.get().getTotalQuantity() + createInventoryDto.getQuantity();
             existingGoodsEntity.get().setTotalQuantity(total);
         } else {
             inventoryEntity.setInventoryType(InventoryType.GOODS_OUT);
             if (existingGoodsEntity.get().getTotalQuantity() < createInventoryDto.getQuantity()) {
                 throw new ItemQuantityException();
             }
-            float total = existingGoodsEntity.get().getTotalQuantity() - createInventoryDto.getQuantity();
+            Float total = existingGoodsEntity.get().getTotalQuantity() - createInventoryDto.getQuantity();
             existingGoodsEntity.get().setTotalQuantity(total);
         }
 
-        inventoryEntity.setId(null);
         inventoryEntity.setDate(LocalDate.now());
         inventoryEntity.setTime(LocalTime.now());
-        inventoryEntity.setDescription(createInventoryDto.getDescription());
-        inventoryEntity.setHandoverTo(createInventoryDto.getHandoverTo());
-        inventoryEntity.setQuantity(createInventoryDto.getQuantity());
-        inventoryEntity.setShedStoreNo(createInventoryDto.getShedStoreNo());
-        inventoryEntity.setSupervisorName(createInventoryDto.getSupervisorName());
         inventoryEntity.setUnitsEntity(existingGoodsEntity.get().getUnitsEntity());
         inventoryEntity.setGoodsEntity(existingGoodsEntity.get());
+
         InventoryEntity savedEntity = itemInventoryRepository.saveAndFlush(inventoryEntity);
-        ResponseWrapperDto responseWrapperDto = new ResponseWrapperDto(true, "Create Success.", null);
-        return responseWrapperDto;
+        CreateInventoryDto response = inventoryMapper.toDto(savedEntity);
+
+        return new ResponseWrapperDto<>(ActiveStatus.ACTIVE.getValue(), CREATE_SUCCESS, response);
     }
 
     @Override
-    public ResponseWrapperDto getAllInventory(Long id, InventoryFilter inventoryFilter, int page, int size) {
+    public ResponseWrapperDto<InventoryPaginationDto<List<InventoryResponseDto>>> getAllInventory(Long id, InventoryFilter inventoryFilter, Integer page, Integer size) {
         List<String> inventoryTypes = new ArrayList<>();
+
         if (inventoryFilter.equals(InventoryFilter.ALL)) {
             inventoryTypes.add(InventoryType.GOODS_IN.toString());
             inventoryTypes.add(InventoryType.GOODS_OUT.toString());
@@ -101,29 +114,17 @@ public class ItemInventoryServiceImpl implements ItemInventory {
                 inventoryTypes.add(InventoryType.GOODS_OUT.toString());
         }
         Pageable paging = PageRequest.of(page, size);
-        Page<InventoryResponseDto> result = itemInventoryRepository.findAllByInventory(id, false, inventoryTypes, paging);
-        InventoryPaginationDto inventoryPaginationDto = new InventoryPaginationDto(
+        Page<InventoryResponseDto> result = itemInventoryRepository.findAllByInventory(id, ActiveStatus.INACTIVE.getValue(), inventoryTypes, paging);
+        InventoryPaginationDto<List<InventoryResponseDto>> inventoryPaginationDto = new InventoryPaginationDto(
                 result.getTotalElements(),
                 result.getTotalPages(),
                 size,
                 page,
-                new ArrayList<InventoryEntity>());
+                new ArrayList<>());
+
         if (result.hasContent()) {
             inventoryPaginationDto.setContent(result.getContent());
         }
-        // List<InventoryResponseDto> list = itemInventoryRepository.findAllByInventory(id, false, inventoryTypes);
-        ResponseWrapperDto responseWrapperDto = new ResponseWrapperDto(true, "Fetch Success.", inventoryPaginationDto);
-        return responseWrapperDto;
-    }
-
-    private BalanceDto getBalance(Long id) {
-       /* Optional<ItemsEntity> entity = itemRepository.findByIdAndIsDeleted(id, false);
-        if(!entity.isPresent()){
-            throw new ItemNotFoundException();
-        }
-        BalanceDto balanceDto = new BalanceDto();
-        balanceDto.setBalance(Float.toString(entity.get().getBalance()));
-        balanceDto.setTotalQuantity(Float.toString(entity.get().getQuantity()));*/
-        return null;
+        return new ResponseWrapperDto<>(ActiveStatus.ACTIVE.getValue(), FETCH_SUCCESS, inventoryPaginationDto);
     }
 }

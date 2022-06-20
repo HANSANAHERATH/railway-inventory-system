@@ -1,11 +1,9 @@
 package com.railway.railwayservice;
 
 import org.junit.jupiter.api.Test;
-import org.mockito.stubbing.OngoingStubbing;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.mockito.Mockito.when;
 
 @SpringBootTest
 public class RailwayServiceApplicationTests {

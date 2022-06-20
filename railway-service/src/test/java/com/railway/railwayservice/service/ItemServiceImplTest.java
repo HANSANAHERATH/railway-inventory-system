@@ -1,40 +1,33 @@
 package com.railway.railwayservice.service;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
-
 import com.railway.railwayservice.Exceptions.ItemAllReadyExistingException;
 import com.railway.railwayservice.Exceptions.ItemNotFoundException;
 import com.railway.railwayservice.Exceptions.RuntimeExceptionHere;
-import com.railway.railwayservice.controllers.ItemInventoryController;
 import com.railway.railwayservice.dtos.GoodsCreateRequestDto;
-import com.railway.railwayservice.dtos.GoodsEntityResponseDto;
-import com.railway.railwayservice.dtos.InventoryPaginationDto;
 import com.railway.railwayservice.dtos.common.ResponseWrapperDto;
 import com.railway.railwayservice.entity.CategoryEntity;
 import com.railway.railwayservice.entity.GoodsEntity;
-import com.railway.railwayservice.entity.InventoryEntity;
 import com.railway.railwayservice.entity.UnitsEntity;
 import com.railway.railwayservice.enums.ActiveStatus;
 import com.railway.railwayservice.mappers.GoodsMapper;
 import com.railway.railwayservice.repository.ItemCategoryRepository;
 import com.railway.railwayservice.repository.ItemRepository;
 import com.railway.railwayservice.repository.UnitRepository;
-
-import java.time.LocalDate;
-import java.util.*;
-
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mockito;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.*;
 
 /**
  * The type Item service impl test.
@@ -183,7 +176,7 @@ class ItemServiceImplTest {
             this.itemServiceImpl.updateItem(goodsCreateDto,123L);
         });
 
-        String message = "Item Not Found";
+        String message = "Goods can not found.";
         assertEquals(message,actualResult.getMessage());
         verify(this.itemRepository).findByIdAndIsDeleted(anyLong(), anyBoolean());
         verify(this.goodsMapper,never()).toEntity(any());
@@ -220,7 +213,7 @@ class ItemServiceImplTest {
             this.itemServiceImpl.deleteItem(123L);
         });
 
-        String message = "Item Not Found";
+        String message = "Goods can not found.";
         assertEquals(message,actualResult.getMessage());
         verify(this.itemRepository,never()).saveAndFlush(any());
     }
@@ -247,7 +240,7 @@ class ItemServiceImplTest {
             this.itemServiceImpl.getItem(123L);
         });
 
-        String message = "Item Not Found";
+        String message = "Goods can not found.";
         assertEquals(message,actualResult.getMessage());
         verify(this.itemRepository).findByIdAndIsDeleted(anyLong(),anyBoolean());
     }
