@@ -25,8 +25,12 @@ public class JwtUtils {
     @Value("${bezkoder.app.jwtExpirationMs}")
     private int jwtExpirationMs;
 
+    private final BlackListTokenRepository blackListTokenRepository;
+
     @Autowired
-    private BlackListTokenRepository blackListTokenRepository;
+    public JwtUtils(BlackListTokenRepository blackListTokenRepository) {
+        this.blackListTokenRepository = blackListTokenRepository;
+    }
 
     /**
      * Generate jwt token string.

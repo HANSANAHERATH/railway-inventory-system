@@ -26,7 +26,6 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class WebSecurity extends WebSecurityConfigurerAdapter {
 
     private final UserDetailsServiceImpl userDetailsService;
-
     private final AuthEntryPointJwt unauthorizedHandler;
 
     /**
@@ -62,7 +61,7 @@ public class WebSecurity extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http
+            http
                 .csrf().disable()
                 .authorizeRequests()
                 .antMatchers(HttpMethod.OPTIONS).denyAll()

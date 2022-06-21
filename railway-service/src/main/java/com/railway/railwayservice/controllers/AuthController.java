@@ -4,6 +4,7 @@ import com.railway.railwayservice.dtos.JwtResponse;
 import com.railway.railwayservice.dtos.LoginRequest;
 import com.railway.railwayservice.dtos.SignupRequest;
 import com.railway.railwayservice.dtos.common.ResponseWrapperDto;
+import com.railway.railwayservice.enums.ActiveStatus;
 import com.railway.railwayservice.service.AuthService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -17,6 +18,8 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/auth")
 @AllArgsConstructor
 public class AuthController {
+    private static final String USER_REGISTER_SUCCESS = "User registered successfully!";
+
     private final AuthService authService;
 
     /**
@@ -39,7 +42,7 @@ public class AuthController {
     @PostMapping("/signup")
     public ResponseEntity<ResponseWrapperDto> registerUser(@RequestBody SignupRequest signUpRequest) {
         authService.registerUser(signUpRequest);
-        return ResponseEntity.ok(new ResponseWrapperDto<>(true, "User registered successfully!", null));
+        return ResponseEntity.ok(new ResponseWrapperDto<>(ActiveStatus.ACTIVE.getValue(), USER_REGISTER_SUCCESS, null));
     }
 
     /**
