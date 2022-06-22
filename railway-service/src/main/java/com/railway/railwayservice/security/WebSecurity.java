@@ -65,9 +65,7 @@ public class WebSecurity extends WebSecurityConfigurerAdapter {
                 .csrf().disable()
                 .authorizeRequests()
                 .antMatchers(HttpMethod.OPTIONS).denyAll()
-                .antMatchers("/railway-system/api/auth/signin", "/swagger-ui.html/**", "/v2/api-docs", "/swagger-resources/**", "/webjars/**").permitAll()
-                .antMatchers("/**").permitAll()
-                .antMatchers("/api/test/**").permitAll()
+                .antMatchers("/api/auth/**").permitAll()
                 .anyRequest().authenticated()
                 .and()
                 .exceptionHandling().authenticationEntryPoint(unauthorizedHandler)
@@ -79,7 +77,5 @@ public class WebSecurity extends WebSecurityConfigurerAdapter {
                 .contentSecurityPolicy("script-script 'self'");
 
         http.addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);
-
-
     }
 }
