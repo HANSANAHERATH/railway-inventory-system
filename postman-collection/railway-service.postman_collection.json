@@ -1,0 +1,205 @@
+{
+	"info": {
+		"_postman_id": "8fd96ab6-b5d3-45cb-9d8e-922300730b32",
+		"name": "railway-service",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "19908941"
+	},
+	"item": [
+		{
+			"name": "get-all-items",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJoYW5zYW5hIiwiaWF0IjoxNjU1ODc0OTQwLCJleHAiOjE2NTU4NzY3NDB9.NLLZym63QlKw24zNp1bSHmRMqa_xyZjEOIEskT4dRjokdT1DTCzt3wmU9MWxHtPe2Ey1kptrscDCGSRQ7jUzYg",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:8080/railway-system/items/all/1/10/0",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"railway-system",
+						"items",
+						"all",
+						"1",
+						"10",
+						"0"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "create-items",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"id\": null,\r\n    \"goodName\": \"abxh\",\r\n    \"description\": \"dddd\",\r\n    \"unitId\": 1,\r\n    \"date\": \"2022-01-10\",\r\n    \"userId\": 1,\r\n    \"category\": 1,\r\n    \"minQuantity\" : 10\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:8080/railway-system/items",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"railway-system",
+						"items"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "create-inventory",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"id\": null,\r\n    \"date\": \"2021-06-30\",\r\n    \"time\": \"10:30\",\r\n    \"shedStoreNo\": \"123\",\r\n    \"description\": \"123\",\r\n    \"quantity\": 100,\r\n    \"supervisorName\": \"sds\",\r\n    \"handoverTo\": \"dss\",\r\n    \"goodsId\": 10,\r\n    \"inventoryType\": \"GOODS_IN\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:8080/railway-system/item-inventory/create",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"railway-system",
+						"item-inventory",
+						"create"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get-all-inventory",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:8080/railway-system/item-inventory/getAll/10/ALL/10/0",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"railway-system",
+						"item-inventory",
+						"getAll",
+						"10",
+						"ALL",
+						"10",
+						"0"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "item-inventory-lookup",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:8080/railway-system/item-inventory/lookup/2",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"railway-system",
+						"item-inventory",
+						"lookup",
+						"2"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "signup",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"username\": \"hansana\",\r\n    \"email\": \"hansana@gmail.com\",\r\n    \"password\": \"hansana\",\r\n    \"role\": [\"admin\"]\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:8080/railway-system/api/auth/signup",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"railway-system",
+						"api",
+						"auth",
+						"signup"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "signin",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"username\": \"hansana\",\r\n    \"password\": \"hansana\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:8080/railway-system/api/auth/signin",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"railway-system",
+						"api",
+						"auth",
+						"signin"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
