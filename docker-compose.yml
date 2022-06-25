@@ -24,7 +24,7 @@ services:
     ports:
       - "80:80"
     volumes:
-      - D:\Workspace/railway-inventory-system/nginx/nginx.conf:/etc/nginx/nginx.conf
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
   backend:
     image: railway-inventory-system/service
     ports: 
@@ -35,6 +35,6 @@ services:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://postgresql:5432/postgres
       - SPRING_DATASOURCE_USERNAME=postgres
       - SPRING_DATASOURCE_PASSWORD=bitnami
-      - SPRING_JPA_HIBERNATE_DDL_AUTO=none
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
 volumes:
   postgresql_master_data:
