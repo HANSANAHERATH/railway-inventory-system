@@ -1,0 +1,5 @@
+/railway-service/target/*
+/railway-client/build/*
+/railway-client/build
+/railway-client/node_modules/*
+/railway-client/node_modules
